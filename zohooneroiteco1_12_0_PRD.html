@@ -1,0 +1,650 @@
+<!--
+    Control de Versiones y Bitácora de Cambios (Versión PRD 1.13.0)
+
+    ESTADO: Publicado y Validado en Producción (URL: https://agtmkt.agtcomunidades.com/zohoonehomedeco/)
+    
+    IMPORTANTE: Este código está optimizado para ser cargado en el widget "Cargar HTML" de Zoho Landing Pages.
+    - Se eliminaron las etiquetas <html>, <head> y <body>.
+    - El contenido está envuelto en un <div> principal con ID único.
+    - El CSS y los scripts se mantienen para funcionalidad.
+
+    ÚLTIMOS CAMBIOS (V1.13.0 PRD - Fuentes para El Problema):
+    - NUEVO: Se agregaron fuentes públicas de soporte a los cuadros emergentes de la sección "El Problema" (Silos, Ineficiencia, Experiencia Rota).
+    - Corrección Crítica (v1.12.0): Aplicación de 'color: white !important;' al texto del footer para evitar conflictos de estilo en Zoho Pages.
+-->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Paleta de Colores basada en agtcomunidades.com */
+        :root {
+            --color-primary-blue: #0A60B7; /* Azul Principal de Iconos y CTA */
+            --color-secondary-cyan: #00A6FB; /* Cian para acentos y progreso */
+            --color-dark-gray: #4A4A4A;   /* Texto Principal, Fondo de Footer */
+            --color-medium-gray: #EFEFEF; /* Fondo de Secciones */
+            --color-accent-orange: #F26419; /* Alerta, Antes */
+            --color-accent-green: #2DC7A2;  /* Éxito, Después */
+            --color-unificada-bg: #074785; /* Tono más oscuro para plataforma unificada */
+        }
+        /* Zoho Landing Pages recomienda CSS Interno */
+        .infografia-container {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* Fondo blanco para evitar conflicto con el fondo de la landing page */
+        }
+        .interactive-card {
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        /* Contenedores de Gráficos */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        /* Estilos de KPI y Valores */
+        .kpi-value {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .kpi-label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        /* Modales */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999; /* Alto z-index para sobresalir en la landing page */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* Estilos para texto destacado en modales */
+        .modal-highlight {
+            font-weight: 700;
+            color: var(--color-primary-blue);
+        }
+    </style>
+
+    <!-- Contenedor Principal de la Infografía -->
+    <div id="infografia-container" class="infografia-container">
+        
+        <!-- Header (Ajustado como Div) -->
+        <div class="shadow-md" style="background-color: var(--color-dark-gray);">
+            <div class="container mx-auto px-6 py-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white" style="color: white !important;">Del Caos a la Cohesión: La Transformación Digital de las PYMES</h1>
+                <p class="mt-4 text-lg text-gray-300" style="color: #D1D5DB !important;">Un análisis del ROI al unificar operaciones con una plataforma integrada.</p>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <section class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-12">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-8" style="color: var(--color-accent-orange);">El Problema: El "Caos de Aplicaciones" en las PYMES</h2>
+                    <p class="max-w-3xl mx-auto text-gray-600 mb-10">La operatividad diaria de muchas PYMES de e-commerce se ve frenada por la dependencia de herramientas aisladas, creando fricciones y perdiendo valor estratégico.</p>
+                </div>
+
+                <!-- Tarjetas de Problemas (Antes) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                    <div class="interactive-card bg-red-50 text-red-800 p-6 flex flex-col justify-center" data-phase="problema_datos">
+                        <div class="w-12 h-12 mb-3 mx-auto" style="color: var(--color-accent-orange);">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 16V10H10C10 11.84 10.15 13.56 10.45 15.06C10.65 16.03 10.95 16.92 11.35 17.65C11.65 18.2 12.05 18.6 12.55 18.8C13.05 19 13.7 19 14.5 19H17V21H14.5C13.52 21 12.72 20.87 12.1 20.61C11.5 20.35 11 20 10.6 19.55C10.2 19.1 9.9 18.55 9.7 17.9C9.5 17.25 9.4 16.5 9.4 15.65V15H7V16ZM19 13V12H17V13H19ZM19 10V9H17V10H19ZM19 7V6H17V7H19ZM19 21V20H17V21H19ZM15 21V20H13V21H15ZM11 21V20H9V21H11ZM7 21V20H5V21H7ZM3 21V20H1V21H3ZM19 3V2H17V3H19ZM15 3V2H13V3H15ZM11 3V2H9V3H11ZM7 3V2H5V3H7ZM3 3V2H1V3H1ZM1 7V6H3V7H1ZM1 10V9H3V10H1ZM1 13V12H3V13H1ZM1 16V15H3V16H1ZM1 19V18H3V19H1ZM5 19V18H7V19H5ZM5 16V15H7V16H5ZM5 13V12H7V13H5ZM5 10V9H7V10H5ZM5 7V6H7V7H5ZM9 7V6H11V7H9ZM13 7V6H15V7H13ZM17 7V6H19V7H17Z" fill="currentColor"/></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Silos y Datos Fragmentados</h3>
+                        <p class="text-sm text-red-700 mt-2">Sólo el 5-10% de los datos generados son aprovechados.</p>
+                    </div>
+                    <div class="interactive-card bg-yellow-50 text-yellow-800 p-6 flex flex-col justify-center" data-phase="problema_ineficiencia">
+                        <div class="w-12 h-12 mb-3 mx-auto" style="color: var(--color-accent-orange);">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.2 6.8V12.4H15.6V14H10.4V6.8H11.2Z" fill="currentColor"/></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Ineficiencia Operativa</h3>
+                        <p class="text-sm text-yellow-700 mt-2">Duplicación de entrada de datos y procesos manuales.</p>
+                    </div>
+                    <div class="interactive-card bg-blue-50 text-blue-800 p-6 flex flex-col justify-center" data-phase="problema_cliente">
+                        <div class="w-12 h-12 mb-3 mx-auto" style="color: var(--color-accent-orange);">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM12 17C13.66 17 15 15.66 15 14C15 12.34 13.66 11 12 11C10.34 11 9 12.34 9 14C9 15.66 10.34 17 12 17ZM12 9C13.66 9 15 7.66 15 6C15 4.34 13.66 3 12 3C10.34 3 9 4.34 9 6C9 7.66 10.34 9 12 9Z" fill="currentColor"/></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Experiencia del Cliente Rota</h3>
+                        <p class="text-sm text-blue-700 mt-2">Comunicación inconsistente por falta de visión 360°.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-12">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4" style="color: var(--color-primary-blue);">La Solución: Un Sistema Operativo de Negocio Unificado</h2>
+                     <h3 class="text-xl font-semibold text-center mb-8 text-gray-800">Flujo de Trabajo Integrado (Después)</h3>
+                    <p class="max-w-3xl mx-auto text-gray-600 mb-10">La implementación de una suite integrada centraliza todas las operaciones, creando una única fuente de verdad y un camino claro hacia la escalabilidad.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6 rounded-lg max-w-6xl mx-auto" style="background-color: var(--color-medium-gray);">
+                        <!-- Tarjeta 1: CRM Integrado -->
+                        <div class="interactive-card p-6" style="background-color: #E6F3FF;" data-phase="crm">
+                            <span class="text-4xl font-bold mb-2 block" style="color: var(--color-primary-blue);">1.</span>
+                            <h4 class="text-lg font-semibold text-gray-800">CRM Integrado</h4>
+                            <p class="text-sm" style="color: var(--color-primary-blue);">Visión 360° del ciclo de vida del cliente.</p>
+                        </div>
+                        <!-- Tarjeta 2: Marketing Automatizado -->
+                        <div class="interactive-card p-6" style="background-color: #FFFBE6;" data-phase="marketing">
+                            <span class="text-4xl font-bold mb-2 block" style="color: var(--color-primary-blue);">2.</span>
+                            <h4 class="text-lg font-semibold text-gray-800">Marketing Automatizado</h4>
+                            <p class="text-sm" style="color: var(--color-primary-blue);">Campañas personalizadas y seguimiento oportuno.</p>
+                        </div>
+                        <!-- Tarjeta 3: Soporte Omnicanal -->
+                        <div class="interactive-card p-6" style="background-color: #F0E6FF;" data-phase="soporte">
+                            <span class="text-4xl font-bold mb-2 block" style="color: var(--color-primary-blue);">3.</span>
+                            <h4 class="text-lg font-semibold text-gray-800">Soporte Omnicanal</h4>
+                            <p class="text-sm" style="color: var(--color-primary-blue);">Centralización de consultas y respuesta rápida.</p>
+                        </div>
+                        <!-- Tarjeta 4: Finanzas y Analítica -->
+                        <div class="interactive-card p-6" style="background-color: #E6FFF3;" data-phase="finanzas">
+                            <span class="text-4xl font-bold mb-2 block" style="color: var(--color-primary-blue);">4.</span>
+                            <h4 class="text-lg font-semibold text-gray-800">Finanzas y Analítica</h4>
+                            <p class="text-sm" style="color: var(--color-primary-blue);">Informes en tiempo real y control presupuestario.</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center my-8">
+                        <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z" fill="currentColor"/></svg>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="interactive-card p-4 rounded-full shadow-md w-56 h-56 font-bold text-xl flex flex-col justify-center items-center" style="background-color: var(--color-unificada-bg); color: white;" data-phase="unificada">
+                            <div class="w-16 h-16 mb-2">
+                               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM15.5 12C15.5 10.62 14.38 9.5 13 9.5H11V7H13V8H15V6H9V18H15V16H13V15H15.5C16.88 15 18 13.88 18 12.5C18 11.12 16.88 10 15.5 10H13V11H15.5Z" fill="white"/></svg>
+                            </div>
+                            Plataforma Unificada
+                        </div>
+                    </div>
+                    <p class="text-center mt-8 text-gray-500 text-sm">Resultado: Visión 360° del cliente, eficiencia operativa y decisiones basadas en datos.</p>
+                </div>
+            </section>
+
+            <section class="text-center">
+                 <h2 class="text-3xl font-bold mb-8" style="color: var(--color-dark-gray);">El Impacto Medible: Retorno de la Inversión (ROI)</h2>
+                 <p class="max-w-3xl mx-auto text-gray-600 mb-10">La unificación es una inversión estratégica con un retorno financiero claro. La analítica avanzada confirma la solidez de los beneficios.</p>
+                 
+                 <!-- Tarjetas de KPIs Detallados -->
+                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                     <div class="interactive-card kpi-card bg-white" data-phase="roi">
+                        <div class="kpi-value" style="color: var(--color-accent-green);">+660%</div>
+                        <div class="kpi-label text-gray-700">ROI Potencial (Ahorro/Ingreso)</div>
+                     </div>
+                     <div class="interactive-card kpi-card bg-white" data-phase="recuperacion">
+                        <div class="kpi-value" style="color: var(--color-accent-green);">2.4</div>
+                        <div class="kpi-label text-gray-700">Meses Payback Period (Recuperación)</div>
+                     </div>
+                     <div class="interactive-card kpi-card bg-white" data-phase="tco">
+                        <div class="kpi-value" style="color: var(--color-accent-orange);">-36%</div>
+                        <div class="kpi-label text-gray-700">Reducción del Costo Total de Propiedad (TCO)</div>
+                     </div>
+                     <div class="interactive-card kpi-card bg-white" data-phase="montecarlo">
+                        <div class="kpi-value" style="color: var(--color-primary-blue);">95%</div>
+                        <div class="kpi-label text-gray-700">Probabilidad de Payback en 3 Meses</div>
+                     </div>
+                 </div>
+                 
+                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="interactive-card bg-white shadow-lg p-6 md:p-8" data-phase="sales">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Mejora en la Eficiencia de Ventas</h3>
+                        <p class="text-gray-600 mb-4 text-sm">La automatización aumenta la tasa de conversión y reduce las oportunidades perdidas.</p>
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="interactive-card bg-white shadow-lg p-6 md:p-8" data-phase="efficiency">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Optimización de la Eficiencia Operativa</h3>
+                         <p class="text-gray-600 mb-4 text-sm">El tiempo del equipo se enfoca en actividades estratégicas, no en tareas manuales.</p>
+                        <div class="chart-container">
+                            <canvas id="efficiencyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="interactive-card bg-white shadow-lg p-6 md:p-8" data-phase="montecarlo_graph">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Validación de Riesgo: Simulación Monte Carlo</h3>
+                         <p class="text-gray-600 mb-4 text-sm">Distribución de probabilidad del tiempo de Payback Period.</p>
+                        <div class="chart-container">
+                            <canvas id="montecarloChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="interactive-card bg-white shadow-lg p-6 md:p-8" data-phase="nps">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Incremento en la Satisfacción del Cliente</h3>
+                         <p class="text-gray-600 mb-4 text-sm">Una experiencia omnicanal y soporte rápido elevan la lealtad y el NPS.</p>
+                        <div class="chart-container">
+                            <canvas id="npsChart"></canvas>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-lg p-6 md:p-8 mt-12">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4" style="color: var(--color-dark-gray);">Beneficios Clave de la Unificación</h2>
+                    <p class="max-w-3xl mx-auto text-gray-600 mb-8">El ROI se traduce en beneficios estratégicos que construyen una base sólida para el crecimiento a largo plazo.</p>
+                </div>
+                <!-- Tarjetas de Beneficios Estadísticos (UX mejorada) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    <div class="interactive-card bg-gray-100 p-6" data-phase="vision">
+                        <div class="w-12 h-12 mb-3 mx-auto" style="color: var(--color-primary-blue);">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5ZM12 17C9.34 17 7.2 14.86 7.2 12.2C7.2 9.54 9.34 7.4 12 7.4C14.66 7.4 16.8 9.54 16.8 12.2C16.8 14.86 14.66 17 12 17ZM12 9.4C10.59 9.4 9.4 10.59 9.4 12C9.4 13.41 10.59 14.6 12 14.6C13.41 14.6 14.6 13.41 14.6 12C14.6 10.59 13.41 9.4 12 9.4Z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="text-5xl font-extrabold mb-1" style="color: var(--color-primary-blue);">+90%</div>
+                        <h4 class="font-bold text-lg text-gray-800">Visión 360°</h4>
+                        <p class="text-gray-600 text-sm">Mejora en la calidad y acceso a datos de cliente.</p>
+                    </div>
+                    <div class="interactive-card bg-gray-100 p-6" data-phase="eficiencia">
+                        <div class="w-12 h-12 mb-3 mx-auto" style="color: var(--color-primary-blue);">
+                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM12 15.5C13.93 15.5 15.5 13.93 15.5 12C15.5 10.07 13.93 8.5 12 8.5C10.07 8.5 8.5 10.07 8.5 12C8.5 13.93 10.07 15.5 12 15.5Z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="text-5xl font-extrabold mb-1" style="color: var(--color-accent-orange);">-70%</div>
+                        <h4 class="font-bold text-lg text-gray-800">Eficiencia Aumentada</h4>
+                        <p class="text-gray-600 text-sm">Reducción de tareas administrativas manuales.</p>
+                    </div>
+                     <div class="interactive-card bg-gray-100 p-6" data-phase="decision">
+                        <div class="w-12 h-12 mb-3 mx-auto" style="color: var(--color-primary-blue);">
+                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 18H10.5V12H13.5V18ZM13.5 10H10.5V6H13.5V10ZM12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20Z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="text-5xl font-extrabold mb-1" style="color: var(--color-accent-green);">100%</div>
+                        <h4 class="font-bold text-lg text-gray-800">Decisiones Basadas en Datos</h4>
+                        <p class="text-gray-600 text-sm">Centralización de la analítica de negocio.</p>
+                    </div>
+                    <div class="interactive-card bg-gray-100 p-6" data-phase="escalabilidad">
+                        <div class="w-12 h-12 mb-3 mx-auto" style="color: var(--color-primary-blue);">
+                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7ZM12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9Z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="text-5xl font-extrabold mb-1" style="color: var(--color-secondary-cyan);">x3</div>
+                        <h4 class="font-bold text-lg text-gray-800">Escalabilidad</h4>
+                        <p class="text-gray-600 text-sm">Capacidad de crecer sin sobrecargar la infraestructura.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="hideModal()">&times;</span>
+                <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
+                <p id="modalDescription" class="text-gray-700"></p>
+            </div>
+        </div>
+        
+        <!-- Footer (Ajustado como Div) -->
+        <div class="mt-12" style="background-color: var(--color-dark-gray);">
+            <div class="container mx-auto px-6 py-8 text-center text-white">
+                <!-- FIX CRÍTICO APLICADO AQUÍ con !important -->
+                <h3 class="text-2xl font-bold" style="color: white !important;">Deja de gestionar aplicaciones. Empieza a gestionar tu negocio.</h3>
+                <p class="mt-2 max-w-2xl mx-auto text-gray-300" style="color: #D1D5DB !important;">La transformación digital es el camino hacia un crecimiento sostenible y rentable. Una plataforma unificada es el primer paso.</p>
+                <a href="https://forms.agtcomunidades.com/agtcompany/form/OhmyFi/formperma/nOn5BpA_F1GqIRac2opqPKOnvYT6bTJSpjVB8uccbzI" target="_blank" class="mt-6 inline-block px-8 py-3 rounded-full font-semibold text-white transition duration-300" style="background-color: var(--color-primary-blue);" onmouseover="this.style.backgroundColor='#085094'" onmouseout="this.style.backgroundColor='var(--color-primary-blue)'">Descubre Cómo</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Lógica de Chart.js y Modales (Se mantiene igual, solo se actualiza la función getCssVar si es necesario)
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const wrapLabel = (label, maxLength = 16) => {
+            let currentLine = '';
+            if (label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLength && currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        };
+
+        const getCssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+        // --- Configuración de Gráficos (El código de los gráficos no cambia) ---
+
+        // 1. Gráfico de Ventas
+        const salesChartLabels = ['Tasa de Conversión', 'Abandono de Carrito'].map(l => wrapLabel(l));
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'bar',
+            data: {
+                labels: salesChartLabels,
+                datasets: [{
+                    label: 'Antes',
+                    data: [1.5, 45],
+                    backgroundColor: getCssVar('--color-accent-orange'),
+                    borderColor: getCssVar('--color-accent-orange'),
+                    borderWidth: 1
+                }, {
+                    label: 'Después',
+                    data: [2.8, 25],
+                    backgroundColor: getCssVar('--color-primary-blue'),
+                    borderColor: getCssVar('--color-primary-blue'),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: function(value) { return value + '%'; } } }
+                },
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { title: tooltipTitleCallback } }, title: { display: false } }
+            }
+        });
+
+        // 2. Gráfico de Eficiencia
+        const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
+        new Chart(efficiencyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Tiempo en Tareas Manuales', 'Tiempo Estratégico'],
+                    datasets: [{
+                    label: 'Distribución del Tiempo',
+                    data: [70, 30],
+                    backgroundColor: [getCssVar('--color-accent-orange'), getCssVar('--color-primary-blue')],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { title: tooltipTitleCallback } }, title: { display: false } }
+            }
+        });
+
+        // 3. Gráfico de NPS
+        const npsChartLabels = ['Satisfacción del Cliente (NPS)'].map(l => wrapLabel(l));
+        const npsCtx = document.getElementById('npsChart').getContext('2d');
+        new Chart(npsCtx, {
+            type: 'bar',
+            data: {
+                labels: npsChartLabels,
+                datasets: [{
+                    label: 'Antes',
+                    data: [45],
+                    backgroundColor: getCssVar('--color-accent-orange'),
+                    borderColor: getCssVar('--color-accent-orange'),
+                    borderWidth: 1
+                }, {
+                    label: 'Después',
+                    data: [78],
+                    backgroundColor: getCssVar('--color-primary-blue'),
+                    borderColor: getCssVar('--color-primary-blue'),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                 scales: { x: { beginAtZero: true, max: 100 } },
+                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { title: tooltipTitleCallback } }, title: { display: false } }
+            }
+        });
+
+        // 4. Gráfico de Simulación Monte Carlo (Histograma)
+        const montecarloCtx = document.getElementById('montecarloChart').getContext('2d');
+        const montecarloData = [1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0];
+        const montecarloCounts = [5, 15, 50, 150, 450, 900, 1500, 1800, 1600, 1200, 900, 400, 100]; 
+        
+        new Chart(montecarloCtx, {
+            type: 'bar',
+            data: {
+                labels: montecarloData.map(m => m + 'm'),
+                datasets: [{
+                    label: 'Frecuencia de Payback Period (Meses)',
+                    data: montecarloCounts,
+                    backgroundColor: montecarloData.map(m => m <= 2.4 ? getCssVar('--color-accent-green') : getCssVar('--color-secondary-cyan')),
+                    borderColor: '#FFFFFF',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Meses de Payback Period (Resultado de 10,000 Simulaciones)' } },
+                    y: { beginAtZero: true, title: { display: true, text: 'Frecuencia de Ocurrencia' } }
+                },
+                plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } }, title: { display: false } }
+            }
+        });
+
+
+        // --- Configuración de Modales (Fuentes para El Problema Agregadas) ---
+        const linkTemplate = (url, text) => `<p class="mt-4"><a href="${url}" target="_blank" class="font-bold text-blue-600 hover:underline">🔗 ${text}</a></p>`;
+
+        const phases = {
+            problema_datos: {
+                title: "Problema: Silos y Datos Fragmentados",
+                description: `La falta de integración genera <span class="modal-highlight">silos de información</span>, impidiendo una visión 360° del cliente. Esta fragmentación es la razón principal por la cual las PYMES solo aprovechan el <span class="modal-highlight">5-10% de sus datos</span>, perdiendo oportunidades estratégicas.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes de Soporte (Problema)</h4>
+                <ul>
+                    <li><a href="https://algoritmia8.com/2022/05/11/las-empresas-solo-explotan-entre-el-5-y-el-10-de-datos-generados/" target="_blank" class="text-blue-600 hover:underline">Algoritmia: Aprovechamiento de Datos en Empresas.</a></li>
+                    <li><a href="https://hbr.org/2012/04/big-data-the-management-revolution" target="_blank" class="text-blue-600 hover:underline">Harvard Business Review: Impacto de la fragmentación de datos.</a></li>
+                </ul>`
+            },
+            problema_ineficiencia: {
+                title: "Problema: Ineficiencia Operativa",
+                description: `Los empleados dedican tiempo a <span class="modal-highlight">tareas manuales y repetitivas</span> (como copiar datos entre sistemas). Esto introduce errores y desvía el enfoque del equipo de <span class="modal-highlight">actividades de alto valor</span>, limitando el potencial de crecimiento.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes de Soporte (Problema)</h4>
+                <ul>
+                    <li><a href="https://www.mckinsey.com/business-functions/operations/our-insights/the-next-frontier-in-process-automation" target="_blank" class="text-blue-600 hover:underline">McKinsey: El costo de la ineficiencia manual.</a></li>
+                    <li><a href="https://synergyadvisors.com.co/blog-3-ineficiencia-operativa-como-detectarla-y-corregirla-en-tu-empresa/" target="_blank" class="text-blue-600 hover:underline">Synergy Advisors: Definición y Costos de Ineficiencia Operativa.</a></li>
+                </ul>`
+            },
+            problema_cliente: {
+                title: "Problema: Experiencia del Cliente Rota",
+                description: `La experiencia del cliente se fractura porque los equipos <span class="modal-highlight">no tienen acceso inmediato al historial</span> de interacciones. La comunicación inconsistente daña la confianza y reduce la <span class="modal-highlight">lealtad (NPS)</span>, afectando la rentabilidad a largo plazo.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes de Soporte (Problema)</h4>
+                <ul>
+                    <li><a href="https://www.gartner.com/en/customer-service/insights/customer-experience-trends" target="_blank" class="text-blue-600 hover:underline">Gartner: Tendencias y Fricción en la Experiencia del Cliente.</a></li>
+                    <li><a href="https://www.forbes.com/sites/forbesinsights/2020/07/28/the-customer-experience-disconnect/?sh=3c5d63f45d3c" target="_blank" class="text-blue-600 hover:underline">Forbes: El impacto de la desconexión de CX.</a></li>
+                </ul>`
+            },
+            crm: {
+                title: "1. CRM Integrado",
+                description: `Un CRM centralizado rastrea cada punto de contacto del cliente. Beneficios clave: <span class="modal-highlight">Aumento de la tasa de conversión</span> al personalizar ofertas y <span class="modal-highlight">gestión de ventas</span> más eficiente. Es el corazón de la visión 360°.
+                    ${linkTemplate('https://www.zoho.com/es-xl/crm/', 'Conoce más sobre Zoho CRM y la gestión de clientes.')}`
+            },
+            marketing: {
+                title: "2. Marketing Automatizado",
+                description: `Permite ejecutar campañas segmentadas y de goteo automáticamente basadas en el comportamiento. Beneficios clave: <span class="modal-highlight">Reducción del abandono de carritos</span> y optimización del <span class="modal-highlight">Retorno de la Inversión en Marketing (ROMI)</span>.
+                    ${linkTemplate('https://www.zoho.com/es-xl/marketingautomation/', 'Descubre las herramientas de Marketing Automation.')}`
+            },
+            soporte: {
+                title: "3. Soporte Omnicanal",
+                description: `Todas las interacciones de servicio (email, chat, redes) se consolidan en una sola plataforma. Beneficios clave: <span class="modal-highlight">Tiempos de respuesta más rápidos</span> y aumento de la <span class="modal-highlight">Satisfacción del Cliente (NPS)</span>.
+                    ${linkTemplate('https://www.zoho.com/es-xl/desk/', 'Ver cómo Zoho Desk unifica tu soporte.')}`
+            },
+            finanzas: {
+                title: "4. Finanzas y Analítica",
+                description: `Integra la gestión contable y el inventario con las ventas. Beneficios clave: <span class="modal-highlight">Control financiero en tiempo real</span> y <span class="modal-highlight">análisis de datos avanzados</span> para identificar oportunidades de negocio.
+                    ${linkTemplate('https://www.zoho.com/es-xl/books/', 'Explora Zoho Books y la contabilidad en la nube.')}`
+            },
+            unificada: {
+                title: "Plataforma Unificada Zoho One",
+                description: `Actúa como un <span class="modal-highlight">'sistema operativo de negocio'</span> que centraliza todas las operaciones. Elimina los silos de datos y las ineficiencias, proporcionando una <span class="modal-highlight">única fuente de verdad</span>.
+                    ${linkTemplate('https://www.zoho.com/es-xl/one/', 'Visita la página oficial de Zoho One.')}`
+            },
+            roi: {
+                title: "ROI Potencial (+660%)",
+                description: `El ROI (Return on Investment) de <span class="modal-highlight">+660%</span> representa el retorno potencial que una empresa puede esperar al invertir en una solución integrada. Este cálculo se basa en la mejora de ingresos, la reducción de costos y el aumento de la productividad.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes Principales</h4>
+                <ul>
+                    <li><a href="https://nucleusresearch.com/research/single/zoho-one-roi-case-study-retail-solutions-provider/" target="_blank" class="text-blue-600 hover:underline">Zoho One ROI Case Study: Retail Solutions Provider - Nucleus Research</a></li>
+                    <li><a href="https://www.bizappln.com/blog/how-to-measure-roi-of-zoho-implementation/" target="_blank" class="text-blue-600 hover:underline">How to measure ROI of Zoho implementation - Bizappln</a></li>
+                </ul>`
+            },
+            recuperacion: {
+                title: "Payback Period (2.4 Meses)",
+                description: `El <span class="modal-highlight">Payback Period de 2.4 meses</span> indica la rapidez con la que los ahorros y los beneficios generados por la nueva plataforma superan el costo de su implementación. Este corto período hace que la inversión sea <span class="modal-highlight">muy atractiva y de bajo riesgo</span> para las PYMES.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes Principales</h4>
+                <ul>
+                    <li><a href="https://nucleusresearch.com/research/single/zoho-one-roi-case-study-retail-solutions-provider/" target="_blank" class="text-blue-600 hover:underline">Zoho One ROI Case Study: Retail Solutions Provider - Nucleus Research</a></li>
+                    <li><a href="https://www.bizappln.com/blog/how-to-measure-roi-of-zoho-implementation/" target="_blank" class="text-blue-600 hover:underline">How to measure ROI of Zoho implementation - Bizappln</a></li>
+                </ul>`
+            },
+            tco: {
+                title: "Reducción del Costo Total de Propiedad (TCO)",
+                description: `La reducción del <span class="modal-highlight">TCO (-36%)</span> se logra consolidando múltiples licencias y eliminando los costos ocultos asociados con la integración y el mantenimiento de <span class="modal-highlight">sistemas dispares</span>. Una suite unificada reduce la complejidad de TI y minimiza los gastos generales.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes Principales</h4>
+                <ul>
+                    <li><a href="https://www.gartner.com/en/information-technology/glossary/total-cost-of-ownership-tco" target="_blank" class="text-blue-600 hover:underline">Gartner: Definición y Cálculo del Costo Total de Propiedad (TCO).</a></li>
+                    <li><a href="https://nucleusresearch.com/research/single/zoho-one-roi-case-study-retail-solutions-provider/" target="_blank" class="text-blue-600 hover:underline">Case Study TCO Reduction - Nucleus Research.</a></li>
+                </ul>`
+            },
+            montecarlo: {
+                title: "Validación de Riesgo: Simulación Monte Carlo",
+                description: `El <span class="modal-highlight">95% de probabilidad</span> de recuperar la inversión en 3 meses o menos valida que, incluso considerando variaciones en los costos y beneficios, la inversión es <span class="modal-highlight">estadísticamente robusta</span> y de bajo riesgo.
+                <h4 class="font-bold text-base mt-4 mb-2">¿Qué es Monte Carlo?</h4>
+                <p>Es un método matemático avanzado que utiliza la <span class="modal-highlight">simulación de miles de escenarios</span> aleatorios para predecir la probabilidad de diferentes resultados. En este contexto, valida la sensibilidad del Payback Period ante la volatilidad de los ingresos y los costos.</p>
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes Principales</h4>
+                <ul>
+                    <li><a href="https://www.investopedia.com/terms/m/montecarlosimulation.asp" target="_blank" class="text-blue-600 hover:underline">Investopedia: Simulación Monte Carlo y su uso financiero.</a></li>
+                    <li><a href="https://www.nucleusresearch.com/" target="_blank" class="text-blue-600 hover:underline">Análisis de Riesgo y ROI - Nucleus Research.</a></li>
+                </ul>`
+            },
+            sales: {
+                title: "Mejora en la Eficiencia de Ventas",
+                description: "Este gráfico de barras muestra cómo la centralización de datos y la automatización impulsan la Tasa de Conversión (aumento) y reducen el Abandono de Carrito (disminución). El racional es que las herramientas integradas permiten un seguimiento del cliente más preciso y mensajes de marketing más oportunos."
+            },
+            efficiency: {
+                title: "Optimización de la Eficiencia Operativa",
+                description: "El gráfico de dona ilustra el cambio en la distribución del tiempo del equipo. La unificación libera tiempo que antes se dedicaba a la entrada de datos manual, permitiendo a los empleados enfocarse en <span class='modal-highlight'>actividades estratégicas</span>. Racional: La automatización se traduce directamente en <span class='modal-highlight'>productividad mejorada</span>."
+            },
+            montecarlo_graph: {
+                title: "Distribución de Payback Period (Simulación Monte Carlo)",
+                description: "Este histograma muestra el rango de resultados probables para el Payback Period bajo diferentes escenarios de riesgo. La alta frecuencia de resultados en el rango verde (<span class='modal-highlight'>2.4 meses o menos</span>) confirma la baja volatilidad y la <span class='modal-highlight'>alta probabilidad de éxito</span> del proyecto. El Monte Carlo es un <span class='modal-highlight'>método estadístico validado</span> para modelar la incertidumbre en la gestión de proyectos y finanzas."
+            },
+            nps: {
+                title: "Incremento en la Satisfacción del Cliente",
+                description: "Este gráfico refleja el aumento en el NPS. Un soporte omnicanal y una visión 360° se traducen en un servicio más rápido y personalizado. Racional: La lealtad del cliente es un multiplicador de ingresos; un <span class='modal-highlight'>NPS alto</span> reduce la rotación y aumenta el <span class='modal-highlight'>valor de vida del cliente (LTV)</span>."
+            },
+            vision: {
+                title: "Visión 360°",
+                description: `La mejora del <span class="modal-highlight">+90%</span> en la calidad y acceso a datos significa que los equipos pueden tomar decisiones basándose en un registro <span class="modal-highlight">único y completo</span> del cliente. Racional: Con información consolidada, cada interacción es relevante, fortaleciendo la experiencia del cliente.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes de Soporte</h4>
+                <ul>
+                    <li><a href="https://www.ibm.com/topics/360-degree-view" target="_blank" class="text-blue-600 hover:underline">IBM: La Importancia de la Visión 360° del Cliente.</a></li>
+                    <li><a href="https://www.nucleusresearch.com/" target="_blank" class="text-blue-600 hover:underline">Impacto de la Visión de Datos en el ROI - Nucleus Research.</a></li>
+                </ul>`
+            },
+            eficiencia: {
+                title: "Eficiencia Aumentada",
+                description: `La reducción del <span class="modal-highlight">-70%</span> en tareas manuales se logra mediante la automatización de flujos de trabajo clave. Racional: Menos tiempo en lo administrativo, <span class="modal-highlight">más tiempo en el core business</span>, lo que se traduce en mayor rentabilidad.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes de Soporte</h4>
+                <ul>
+                    <li><a href="https://www.mckinsey.com/business-functions/operations/our-insights/the-next-frontier-in-process-automation" target="_blank" class="text-blue-600 hover:underline">McKinsey: El Valor de la Automatización de Procesos (RPA).</a></li>
+                    <li><a href="https://www.gartner.com/en/articles/achieve-automation-scale-and-speed" target="_blank" class="text-blue-600 hover:underline">Gartner: Logrando Escalabilidad con la Automatización.</a></li>
+                </ul>`
+            },
+            decision: {
+                title: "Decisiones Basadas en Datos",
+                description: `El <span class="modal-highlight">100% de centralización</span> de analítica significa que todos los informes provienen de la misma fuente. Racional: Elimina las discusiones sobre la 'fuente de verdad' y <span class="modal-highlight">acelera la toma de decisiones</span> estratégicas.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes de Soporte</h4>
+                <ul>
+                    <li><a href="https://hbr.org/2012/04/big-data-the-management-revolution" target="_blank" class="text-blue-600 hover:underline">Harvard Business Review: La Revolución de la Gestión de Datos.</a></li>
+                    <li><a href="https://www.forbes.com/sites/forbesinsights/2019/12/05/data-driven-decisions-are-key-to-business-growth/?sh=46c764c07c13" target="_blank" class="text-blue-600 hover:underline">Forbes: Por qué las Decisiones Basadas en Datos impulsan el Crecimiento.</a></li>
+                </ul>`
+            },
+            escalabilidad: {
+                title: "Escalabilidad (Factor x3)",
+                description: `La infraestructura unificada permite a la PYME <span class="modal-highlight">triplicar su volumen de operaciones</span> o base de clientes sin una revisión completa de sus sistemas. Racional: El sistema crece contigo, asegurando que la tecnología no sea un <span class="modal-highlight">cuello de botella</span> para la expansión.
+                <h4 class="font-bold text-base mt-4 mb-2">Fuentes de Soporte</h4>
+                <ul>
+                    <li><a href="https://www.gartner.com/en/information-technology/glossary/scalability" target="_blank" class="text-blue-600 hover:underline">Gartner: Definición y Principios de la Escalabilidad Tecnológica.</a></li>
+                    <li><a href="https://www.mckinsey.com/business-functions/digital/our-insights/scaling-digital-solutions-across-the-enterprise" target="_blank" class="text-blue-600 hover:underline">McKinsey: Cómo Escalar Soluciones Digitales.</a></li>
+                </ul>`
+            }
+        };
+
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        
+        const interactiveSelectors = [
+            '.interactive-card'
+        ].join(', ');
+
+        const clickableElements = document.querySelectorAll(interactiveSelectors);
+
+        clickableElements.forEach(element => {
+            element.addEventListener('click', () => {
+                const phase = element.getAttribute('data-phase');
+                const data = phases[phase];
+                if (data) {
+                    modalTitle.textContent = data.title;
+                    modalDescription.innerHTML = data.description;
+                    modal.style.display = 'flex';
+                }
+            });
+        });
+
+        const hideModal = () => {
+            modal.style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                hideModal();
+            }
+        }
+    </script>
