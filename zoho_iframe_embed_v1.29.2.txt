@@ -1,0 +1,59 @@
+<div id="infografia-wrapper" style="width: 100%; min-height: 400px; margin: 0 !important; padding: 0 !important; line-height: 0;">
+  <iframe
+    id="infografia-iframe"
+    src="https://cvcol.github.io/home-deco-landings/infografia_v1.29.2_PRD_GITHUB.html"
+    width="100%"
+    height="100%"
+    frameborder="0"
+    scrolling="no"
+    style="border:none; display:block; overflow:hidden; margin:0; padding:0;"
+    title="Análisis de ROI de Transformación Digital"
+    referrerpolicy="no-referrer-when-downgrade"
+    loading="lazy"
+  ></iframe>
+</div>
+
+<script>
+(function(){
+  const TRUSTED_ORIGINS = [
+    'https://cvcol.github.io'
+  ];
+  const WRAPPER_ID = 'infografia-wrapper';
+  const IFRAME_ID  = 'infografia-iframe';
+
+  function isTrusted(event){
+    // return TRUSTED_ORIGINS.includes(event.origin);
+    return true;
+  }
+
+  function applyHeight(newHeight){
+    const wrapper = document.getElementById(WRAPPER_ID);
+    const iframe  = document.getElementById(IFRAME_ID);
+    if (!wrapper || !iframe) return;
+    const safe = Math.max(0, Math.ceil(newHeight || 0));
+    wrapper.style.height = safe + 'px';
+    iframe.style.height  = safe + 'px';
+  }
+
+  // Altura inicial provisional
+  applyHeight(600);
+
+  window.addEventListener('message', (event) => {
+    if (!event || !event.data) return;
+    if (!isTrusted(event)) return;
+
+    const msg = event.data || {};
+    if (msg.type === 'setIframeHeight') {
+      const plus = 4; // margen mínimo anti-cortes
+      const target = (msg.height || 0) + plus;
+      try {
+        const iframe = document.getElementById(IFRAME_ID);
+        if (!iframe || iframe.contentWindow !== event.source) { applyHeight(target); return; }
+      } catch(e) {
+        // cross-origin guard
+      }
+      applyHeight(target);
+    }
+  }, false);
+})();
+</script>
