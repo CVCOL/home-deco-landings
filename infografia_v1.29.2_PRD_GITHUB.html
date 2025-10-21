@@ -98,7 +98,8 @@ html,body{margin:0;padding:0;height:auto;overflow-x:hidden;overflow-y:visible;}
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999; /* Alto z-index para iframe */
+            z-index: 2147483647 !important; /* Z-index máximo absoluto para anular conflictos de CSP/Zoho */
+            
         }
         .modal-content {
             background-color: var(--color-white);
