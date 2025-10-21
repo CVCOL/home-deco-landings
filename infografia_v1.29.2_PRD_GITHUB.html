@@ -741,7 +741,13 @@ html,body{margin:0;padding:0;height:auto;overflow-x:hidden;overflow-y:visible;}
             icon.classList.add('rotate');
         }
     }
-    
+    // Función global para asegurar el cierre del modal, evitando conflictos en iframes.
+function closeActiveModal() {
+    const modal = document.getElementById('active-modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
     // Elementos del DOM
     const modalContainer = document.getElementById('modal-container');
 
@@ -1034,7 +1040,8 @@ html,body{margin:0;padding:0;height:auto;overflow-x:hidden;overflow-y:visible;}
                     <div class="modal-content">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="text-2xl font-bold text-[var(--color-primary-blue)]">${title}</h3>
-                            <button class="modal-close-btn" onclick="document.getElementById('active-modal-overlay').remove()">&times;</button>
+                            <button class="modal-close-btn" onclick="closeActiveModal()">&times;</button>
+                        
                         </div>
                         <div class="text-[var(--color-gray-dark)] space-y-4">
                             ${content}
@@ -1043,13 +1050,12 @@ html,body{margin:0;padding:0;height:auto;overflow-x:hidden;overflow-y:visible;}
                 </div>
             `;
             modalContainer.innerHTML = modalHTML;
-            
             document.getElementById('active-modal-overlay').addEventListener('click', function(e) {
                 if (e.target.id === 'active-modal-overlay') {
-                    e.target.remove();
+                  closeActiveModal();
                 }
             });
-        }
+         }
         
         // --- Definiciones de Contenido ---
         const content = {
