@@ -2,7 +2,7 @@
 =====================================================
 CONTROL DE VERSIONES: v1.29.2 (PRODUCTIVA)
 FECHA: 27/09/2025
-DESCRIPCIÓN: CÓDIGO FINAL ESTABLE PARA GITHUB PAGES (IFRAME)
+DESCRIPCIÓN: CÓDIGO FINAL function closeActiveModal()ESTABLE PARA GITHUB PAGES (IFRAME)
 - UX/ESTABILIDAD: Solución definitiva al problema de truncado en FAQ usando un max-height excesivo y lógica de acordeón exclusivo.
 - CRÍTICO: Código adaptado a formato HTML5 completo para servidor externo (GitHub/CDN).
 - FUNCIÓN: Acordeón Exclusivo a nivel de Categoría (FAQ).
@@ -753,13 +753,22 @@ html,body{margin:0;padding:0;height:auto;overflow-x:hidden;overflow-y:visible;}
             icon.classList.add('rotate');
         }
     }
-    // Función global para asegurar el cierre del modal, evitando conflictos en iframes.
+    // Función global para asegurar el cierre del modal, utilizando manipulación de DOM.
 function closeActiveModal() {
     const modal = document.getElementById('active-modal-overlay');
     if (modal) {
-        modal.remove();
+        // 1. Ocultar el modal (CAMBIO CRÍTICO: solo ocultamos, no removemos)
+        modal.style.display = 'none';
+        // 2. Limpiar el contenido del cuerpo para que la próxima vez cargue vacío
+        const bodyEl = document.getElementById('modal-body');
+        if (bodyEl) bodyEl.innerHTML = '';
+        // 3. Limpiar el título
+        const titleEl = document.getElementById('modal-title');
+        if (titleEl) titleEl.textContent = '';
     }
 }
+    
+
     // Elementos del DOM
     const modalContainer = document.getElementById('modal-container');
 
@@ -1039,35 +1048,36 @@ function closeActiveModal() {
                 }
             }
         });
-        
-        // =================================================================
-        // 2. MODAL LOGIC (Se mantiene la lógica de modales)
-        // =================================================================
 
-        const modalContainer = document.getElementById('modal-container');
-        
-        function showModal(title, content) {
-            const modalHTML = `
-                <div class="modal-overlay" id="active-modal-overlay">
-                    <div class="modal-content">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold text-[var(--color-primary-blue)]">${title}</h3>
-                            <button class="modal-close-btn" onclick="closeActiveModal()">&times;</button>
-                        
-                        </div>
-                        <div class="text-[var(--color-gray-dark)] space-y-4">
-                            ${content}
-                        </div>
-                    </div>
-                </div>
-            `;
-            modalContainer.innerHTML = modalHTML;
-            document.getElementById('active-modal-overlay').addEventListener('click', function(e) {
-                if (e.target.id === 'active-modal-overlay') {
-                  closeActiveModal();
-                }
-            });
-         }
+// =================================================================
+// 2. MODAL LOGIC (Manipulación de DOM para seguridad)
+// =================================================================
+
+// NOTA: 'modalContainer' no se usa en esta versión de showModal, pero se deja por consistencia
+const modalContainer = document.getElementById('modal-container'); 
+
+// NUEVA FUNCIÓN showModal (Manipulación de elementos preexistentes)
+function showModal(title, content) {
+    // 1. Obtenemos los elementos que ya están en el HTML
+    const overlay = document.getElementById('active-modal-overlay');
+    const titleEl = document.getElementById('modal-title');
+    const bodyEl = document.getElementById('modal-body');
+
+    // 2. Actualizamos el título y el cuerpo de forma segura
+    titleEl.textContent = title;
+    bodyEl.innerHTML = content; 
+
+    // 3. Mostramos el modal
+    overlay.style.display = 'flex';
+    
+    // 4. Mantenemos el listener para el cierre por fondo 
+    document.getElementById('active-modal-overlay').addEventListener('click', function(e) {
+        if (e.target.id === 'active-modal-overlay') {
+            closeActiveModal();
+        }
+    });
+}        
+ 
         
         // --- Definiciones de Contenido ---
         const content = {
