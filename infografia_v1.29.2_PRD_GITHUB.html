@@ -231,7 +231,18 @@ html,body{margin:0;padding:0;height:auto;overflow-x:hidden;overflow-y:visible;}
 <div id="infographic-main" class="infographic-container p-6 md:p-12">
 
     <!-- MODAL CONTAINER -->
-    <div id="modal-container"></div>
+    
+    <div class="modal-overlay" id="active-modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="flex justify-between items-start mb-4">
+            <h3 id="modal-title" class="text-2xl font-bold text-[var(--color-primary-blue)]"></h3>
+            <button class="modal-close-btn" onclick="closeActiveModal()">&times;</button>
+        </div>
+        <div id="modal-body" class="text-[var(--color-gray-dark)] space-y-4">
+            </div>
+    </div>
+</div>
+<div id="modal-container" style="display: none;"></div>
 
     <!-- HEADER/TITLE SECTION -->
     <div class="mb-10 text-center">
@@ -1297,40 +1308,122 @@ function closeActiveModal() {
                 `
             }
         };
-
         // --- Event Listeners de Modales ---
         // Problema
-        document.getElementById('card-problema-1').addEventListener('click', () => showModal(content['problema-1'].title, content['problema-1'].content));
-        document.getElementById('card-problema-2').addEventListener('click', () => showModal(content['problema-2'].title, content['problema-2'].content));
-        document.getElementById('card-problema-3').addEventListener('click', () => showModal(content['problema-3'].title, content['problema-3'].content));
+        document.getElementById('card-problema-1').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['problema-1'].title, content['problema-1'].content);
+        });
+        document.getElementById('card-problema-2').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['problema-2'].title, content['problema-2'].content);
+        });
+        document.getElementById('card-problema-3').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['problema-3'].title, content['problema-3'].content);
+        });
         
         // Flujo
-        document.getElementById('flow-card-1').addEventListener('click', () => showModal(content['flow-1'].title, content['flow-1'].content));
-        document.getElementById('flow-card-2').addEventListener('click', () => showModal(content['flow-2'].title, content['flow-2'].content));
-        document.getElementById('flow-card-3').addEventListener('click', () => showModal(content['flow-3'].title, content['flow-3'].content));
-        document.getElementById('flow-card-4').addEventListener('click', () => showModal(content['flow-4'].title, content['flow-4'].content));
-        document.getElementById('plataforma-unificada-circle').addEventListener('click', () => showModal(content['plataforma-unificada'].title, content['plataforma-unificada'].content));
+        document.getElementById('flow-card-1').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['flow-1'].title, content['flow-1'].content);
+        });
+        document.getElementById('flow-card-2').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['flow-2'].title, content['flow-2'].content);
+        });
+        document.getElementById('flow-card-3').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['flow-3'].title, content['flow-3'].content);
+        });
+        document.getElementById('flow-card-4').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['flow-4'].title, content['flow-4'].content);
+        });
+        document.getElementById('plataforma-unificada-circle').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['plataforma-unificada'].title, content['plataforma-unificada'].content);
+        });
 
         // KPIs
-        document.getElementById('kpi-roi').addEventListener('click', () => showModal(content['kpi-roi'].title, content['kpi-roi'].content));
-        document.getElementById('kpi-payback').addEventListener('click', () => showModal(content['kpi-payback'].title, content['kpi-payback'].content));
-        document.getElementById('kpi-tco').addEventListener('click', () => showModal(content['kpi-tco'].title, content['kpi-tco'].content));
-        document.getElementById('kpi-montecarlo').addEventListener('click', () => showModal(content['kpi-montecarlo'].title, content['kpi-montecarlo'].content));
+        document.getElementById('kpi-roi').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['kpi-roi'].title, content['kpi-roi'].content);
+        });
+        document.getElementById('kpi-payback').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['kpi-payback'].title, content['kpi-payback'].content);
+        });
+        document.getElementById('kpi-tco').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['kpi-tco'].title, content['kpi-tco'].content);
+        });
+        document.getElementById('kpi-montecarlo').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['kpi-montecarlo'].title, content['kpi-montecarlo'].content);
+        });
 
         // Gráficos
-        document.getElementById('chart-card-1').addEventListener('click', () => showModal('Gráfico: Mejora en la Eficiencia de Ventas', content['chart-1'].content));
-        document.getElementById('chart-card-2').addEventListener('click', () => showModal('Gráfico: Optimización de la Eficiencia Operativa', content['chart-2'].content));
-        document.getElementById('chart-card-3').addEventListener('click', () => showModal('Gráfico: Simulación Monte Carlo', content['chart-3'].content));
-        document.getElementById('chart-card-4').addEventListener('click', () => showModal('Gráfico: Satisfacción del Cliente (NPS)', content['chart-4'].content));
-        document.getElementById('chart-card-5').addEventListener('click', () => showModal('Gráfico: Retorno vs. Inversión Inicial', content['chart-5'].content));
+        document.getElementById('chart-card-1').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal('Gráfico: Mejora en la Eficiencia de Ventas', content['chart-1'].content);
+        });
+        document.getElementById('chart-card-2').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal('Gráfico: Optimización de la Eficiencia Operativa', content['chart-2'].content);
+        });
+        document.getElementById('chart-card-3').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal('Gráfico: Simulación Monte Carlo', content['chart-3'].content);
+        });
+        document.getElementById('chart-card-4').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal('Gráfico: Satisfacción del Cliente (NPS)', content['chart-4'].content);
+        });
+        document.getElementById('chart-card-5').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal('Gráfico: Retorno vs. Inversión Inicial', content['chart-5'].content);
+        });
 
         // Beneficios
-        document.getElementById('benefit-card-1').addEventListener('click', () => showModal(content['benefit-1'].title, content['benefit-1'].content));
-        document.getElementById('benefit-card-2').addEventListener('click', () => showModal(content['benefit-2'].title, content['benefit-2'].content));
-        document.getElementById('benefit-card-3').addEventListener('click', () => showModal(content['benefit-3'].title, content['benefit-3'].content));
-        document.getElementById('benefit-card-4').addEventListener('click', () => showModal(content['benefit-4'].title, content['benefit-4'].content));
-    });
-</script>
+        document.getElementById('benefit-card-1').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['benefit-1'].title, content['benefit-1'].content);
+        });
+        document.getElementById('benefit-card-2').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['benefit-2'].title, content['benefit-2'].content);
+        });
+        document.getElementById('benefit-card-3').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['benefit-3'].title, content['benefit-3'].content);
+        });
+        document.getElementById('benefit-card-4').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showModal(content['benefit-4'].title, content['benefit-4'].content);
+        });
+    }); // La última llave de cierre del DOMContentLoaded
 
 <script>
 // Override: toggleCategoryAccordion(header, contentId) — v1.29.2
