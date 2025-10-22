@@ -1,0 +1,1446 @@
+<!-- 
+=====================================================
+CONTROL DE VERSIONES: v1.29.21 (PRODUCTIVA/FINAL)
+FECHA: 22/10/2025
+DESCRIPCIÓN: SOLUCIÓN DE CENTRADO HORIZONTAL y UX FINAL para PRD.
+- CRÍTICO: Corrección de BUG de desplazamiento horizontal en el contenedor Zoho One al cerrarse, aplicando centrado estructural.
+- UX/ESTABILIDAD: Solución definitiva al BUG de espacio residual al cerrar el Acordeón Integrado.
+- FUNCIONALIDAD: 100% de los elementos interactivos y gráficos funcionales.
+=====================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<style>/* HeightMessenger Reset */
+html,body{margin:0;padding:0;height:auto;overflow-x:hidden;overflow-y:visible;}
+</style>
+
+<meta name="description" content="Infografía interactiva de ROI y KPIs — versión 1.29.21 (Funcionalidad 100%).">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis ROI de Transformación Digital para PYMES | Zoho One</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* VARIABLES DE COLOR (Paleta Corporativa AGT) */
+        :root {
+            --color-primary-blue: #00458C;
+            --color-secondary-blue: #0077B6;
+            --color-accent-blue: #00B4D8;
+            --color-gray-dark: #333333;
+            --color-gray-light: #F0F4F8;
+            --color-white: #FFFFFF;
+            --color-green-soft: #d0f0d0; /* Para el flujo 4 (Finanzas) */
+            --color-yellow-soft: #fffacd; /* Para el flujo 2 (Marketing) */
+            --color-pink-soft: #f4e4f9; /* Para el flujo 3 (Soporte) */
+            --color-blue-soft: #e0f2ff; /* Para el flujo 1 (CRM) */
+            --color-red-error: #FF0000;
+        }
+
+        /* Estilos Generales para el Widget HTML */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-gray-light);
+            padding: 0;
+            margin: 0;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .infographic-container {
+            padding: 0;
+            margin: 0 auto;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Estilos para Tarjetas Interactivas */
+        .interactive-card {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            /* Importante para que el contenido in-line no rompa el grid/flex */
+            flex-direction: column;
+            display: flex;
+            position: relative; /* Necesario para el indicador de información */
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Indicador de Información Adicional (UX) */
+        .info-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--color-accent-blue);
+            color: var(--color-white);
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none; /* No debe interferir con el clic de la tarjeta */
+        }
+        .interactive-card:hover .info-indicator {
+             opacity: 1;
+             transform: scale(1.1);
+        }
+
+        
+        /* Estilo para tarjetas de Problema/Beneficio */
+        .styled-card {
+            border-left: 6px solid var(--color-primary-blue);
+            padding-left: 20px;
+            padding-right: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .styled-card:hover {
+             border-left-width: 8px;
+        }
+        /* Coloración de borde para KPIs */
+        #kpi-roi { border-left-color: var(--color-primary-blue); border-bottom: none !important; }
+        #kpi-payback { border-left-color: var(--color-accent-blue); border-bottom: none !important; }
+        #kpi-tco { border-left-color: var(--color-secondary-blue); border-bottom: none !important; }
+        #kpi-montecarlo { border-left-color: #FF6F00; border-bottom: none !important; }
+
+        /* Estilo para encabezados de sección */
+        .section-header {
+            background-image: linear-gradient(135deg, var(--color-primary-blue) 0%, var(--color-secondary-blue) 100%);
+            color: var(--color-white) !important;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        /* Aseguramos que el h2 no se vea afectado por el estilo de texto del padre */
+        .section-header h2 {
+            color: var(--color-white) !important;
+        }
+
+        /* Estilos para el Acordeón Integrado (Card Detail) */
+        .card-detail-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--color-gray-light);
+            width: 100%;
+        }
+        .card-detail-container.active {
+            padding-bottom: 5px;
+            /* El max-height real se calcula en JS */
+        }
+        .card-detail-container .close-btn {
+            background: var(--color-red-error);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .card-detail-container .close-btn:hover {
+            background: #CC0000;
+        }
+
+
+        /* Estilos para Gráficos - Se mantienen */
+        .chart-container {
+            position: relative;
+            height: 300px; /* Altura base para escritorio */
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Media Queries para responsividad de gráficos en móvil */
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+        
+        /* Estilos para el Flujo de Solución - Se mantienen */
+        .flow-step {
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-light);
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        /* Colores Suaves para los Pasos del Flujo */
+        .flow-step.step-1 { background-color: var(--color-blue-soft); }
+        .flow-step.step-2 { background-color: var(--color-yellow-soft); }
+        .flow-step.step-3 { background-color: var(--color-pink-soft); }
+        .flow-step.step-4 { background-color: var(--color-green-soft); }
+        
+        /* AJUSTE DE DISEÑO v1.29.16: Fuente oscura para mejor legibilidad en fondos suaves */
+        .flow-step .text-gray-600 { 
+            color: #1F2937; /* Gray-900 o similar, muy oscuro */
+        }
+
+        /* Plataforma Unificada: de Círculo a Rectángulo (v1.29.16) */
+        #plataforma-unificada-rect {
+            width: 250px; /* Ajuste para un look más rectangular y corporativo */
+            height: 120px;
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 16px;
+            /* La animación de pulso debe estar en este contenedor */
+        }
+
+        /* Contenedor Wrapper para el clic y la animación */
+        .rect-wrapper {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            user-select: none;
+            margin-top: 16px;
+             /* CORRECCIÓN V1.29.21: Aseguramos centrado estructuralmente */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Animación para el rectángulo central */
+        .pulse {
+            animation: pulse-ring 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(0, 75, 140, 0.5); }
+            80% { box-shadow: 0 0 0 20px rgba(0, 75, 140, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 75, 140, 0); }
+        }
+
+        /* Estilos para el Acordeón FAQ - Se mantienen */
+        .accordion-item {
+            border-bottom: 1px solid var(--color-blue-soft); /* Borde más suave */
+            margin-bottom: 5px;
+        }
+        .accordion-category-header { /* Header para Categoría */
+            background-color: var(--color-primary-blue);
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px; /* Radio de borde más pequeño */
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra más fuerte */
+        }
+        .accordion-category-header:hover {
+             background-color: var(--color-secondary-blue);
+        }
+        .accordion-header {
+            background-color: var(--color-white);
+            padding: 16px 18px; /* Padding ajustado */
+            font-weight: 600; /* Menos negrita */
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            box-shadow: none; /* Eliminar sombra del header interno */
+            color: var(--color-gray-dark);
+            margin-top: 5px;
+            border: 1px solid #ddd;
+        }
+        .accordion-header:hover {
+            background-color: var(--color-blue-soft);
+        }
+        .accordion-content {
+            padding: 0 18px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            background-color: #fcfcfc; /* Fondo más claro */
+            border-radius: 0 0 6px 6px;
+        }
+        .accordion-content.active {
+            padding: 15px 18px 25px 18px;
+        }
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease-in-out;
+            padding: 0 0 10px 0; /* Padding inferior para separación */
+            background-color: var(--color-white);
+            border-radius: 0 0 8px 8px;
+        }
+        .accordion-icon, .category-icon {
+            transition: transform 0.3s;
+        }
+        .accordion-icon.rotate, .category-icon.rotate {
+            transform: rotate(180deg);
+        }
+        .accordion-category {
+            margin-top: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); /* Sombra de categoría más profunda */
+        }
+    </style>
+</head>
+<body>
+
+<div id="infographic-main" class="infographic-container p-6 md:p-12">
+
+    <!-- HEADER/TITLE SECTION -->
+    <div class="mb-10 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-[var(--color-primary-blue)] mb-4 leading-tight">Del Caos a la Cohesión: La Transformación Digital de las PYMES</h1>
+        <p class="text-xl text-[var(--color-gray-dark)]">Un análisis del ROI al unificar operaciones con una plataforma integrada.</p>
+    </div>
+
+    <!-- KEY VISUAL CENTRAL (NUEVO - v1.14.0) -->
+    <div class="mb-10 w-full overflow-hidden rounded-xl shadow-lg">
+        <!-- Imagen Key Visual (800x250) -->
+        <img src="https://i.imgur.com/WhPvSeb.png" alt="Ilustración de la transformación digital: el caos de aplicaciones se convierte en una operación unificada y coherente." class="w-full h-auto object-cover max-h-[250px] min-h-[150px]" onerror="this.onerror=null; this.src='https://placehold.co/800x250/F0F4F8/333333?text=Key+Visual+de+Transformación'">
+    </div>
+
+    <!-- BANNER DE DESCUBRIBILIDAD (V1.29.20) -->
+    <div class="bg-[var(--color-blue-soft)] p-5 rounded-lg text-center shadow-md mb-8 max-w-4xl mx-auto">
+        <p class="text-lg font-semibold text-[var(--color-gray-dark)] flex items-center justify-center">
+             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-[var(--color-primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            Haga clic en cada tarjeta para ver el detalle de la validación y el impacto.
+        </p>
+    </div>
+
+    <!-- SECCIÓN 1: EL PROBLEMA -->
+    <div class="section-header mb-6 mt-10 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold">El Problema: El "Caos de Aplicaciones" en las PYMES</h2>
+    </div>
+    <p class="text-[var(--color-gray-dark)] text-center mb-10 max-w-3xl mx-auto">La fragmentación de herramientas frena el crecimiento, crea ineficiencia y limita la capacidad de las PYMES de explotar los datos que generan.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        
+        <!-- Tarjeta 1: Silos y Datos Fragmentados -->
+        <div id="card-problema-1" class="interactive-card bg-white rounded-xl p-6 flex flex-col items-center text-center styled-card" onclick="toggleCardContent('card-problema-1')">
+            <div class="info-indicator">i</div>
+            <!-- [v1.29.6] SVG: Datos Fragmentados (Database + Block) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary-blue);">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                <path d="M3 5v14h18V5M3 12a9 3 0 0 0 18 0M3 19a9 3 0 0 0 18 0M3 5h18"/>
+                <line x1="10" y1="12" x2="14" y2="17" stroke="red"/>
+                <line x1="14" y1="12" x2="10" y2="17" stroke="red"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-[var(--color-gray-dark)] mb-2">Silos y Datos Fragmentados</h3>
+            <p class="text-sm text-gray-500">Imposibilidad de tener una visión 360° del cliente y del negocio.</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-card-problema-1"></div>
+        </div>
+
+        <!-- Tarjeta 2: Ineficiencia Operativa -->
+        <div id="card-problema-2" class="interactive-card bg-white rounded-xl p-6 flex flex-col items-center text-center styled-card" style="border-left-color: var(--color-secondary-blue);" onclick="toggleCardContent('card-problema-2')">
+            <div class="info-indicator">i</div>
+            <!-- [v1.29.6] SVG: Ineficiencia (Broken Gear) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-secondary-blue);">
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+                <circle cx="12" cy="12" r="3"/>
+                <line x1="10" y1="14" x2="14" y2="10" stroke="red" stroke-dasharray="2 2"/>
+                <line x1="14" y1="14" x2="10" y2="10" stroke="red" stroke-dasharray="2 2"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-[var(--color-gray-dark)] mb-2">Ineficiencia Operativa</h3>
+            <p class="text-sm text-gray-500">Tiempo desproporcionado dedicado a tareas manuales y repetitivas.</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-card-problema-2"></div>
+        </div>
+
+        <!-- Tarjeta 3: Experiencia del Cliente Rota -->
+        <div id="card-problema-3" class="interactive-card bg-white rounded-xl p-6 flex flex-col items-center text-center styled-card" style="border-left-color: var(--color-accent-blue);" onclick="toggleCardContent('card-problema-3')">
+            <div class="info-indicator">i</div>
+            <!-- [v1.29.6] SVG: Experiencia Rota (Broken Heart/Star) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-accent-blue);">
+                <path d="M11.375 19.897L5.8 19.897 12 5.099 18.2 19.897h-5.572M12 12v4.897M12 12L7.3 17"/>
+                <line x1="14.5" y1="14.5" x2="18" y2="18" stroke="red"/>
+                <path d="M18 18L14.5 21"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-[var(--color-gray-dark)] mb-2">Experiencia del Cliente Rota</h3>
+            <p class="text-sm text-gray-500">Falta de personalización y soporte lento debido a información dispersa.</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-card-problema-3"></div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: LA SOLUCIÓN (FLUJO UNIFICADO) -->
+    <div class="bg-white p-6 md:p-10 rounded-xl shadow-lg mb-16">
+        <h2 class="text-3xl font-bold text-[var(--color-secondary-blue)] mb-4 text-center">La Solución: Un Sistema Operativo de Negocio Unificado</h2>
+        <h3 class="text-xl font-semibold text-[var(--color-gray-dark)] mb-6 text-center">Flujo de Trabajo Integrado (Después)</h3>
+        <p class="text-[var(--color-gray-dark)] text-center mb-10 max-w-4xl mx-auto">La implementación de una suite integrada centraliza todas las operaciones, desde el marketing y las ventas hasta el soporte y las finanzas, creando una única fuente de verdad.</p>
+        
+        <!-- Contenedor del Flujo de Trabajo -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            <!-- Paso 1: CRM Integrado -->
+            <div id="flow-card-1" class="flow-step step-1 interactive-card" onclick="toggleCardContent('flow-card-1')">
+                <div class="info-indicator">i</div>
+                <p class="text-4xl font-extrabold text-[var(--color-primary-blue)] mb-2">1.</p>
+                <p class="text-lg font-bold text-[var(--color-gray-dark)]">CRM Integrado</p>
+                <p class="text-sm text-gray-600">Visión 360° del ciclo de vida del cliente.</p>
+                <!-- CONTENIDO IN-LINE -->
+                <div class="card-detail-container" id="detail-flow-card-1"></div>
+            </div>
+            <!-- Paso 2: Marketing Automatizado -->
+            <div id="flow-card-2" class="flow-step step-2 interactive-card" onclick="toggleCardContent('flow-card-2')">
+                 <div class="info-indicator">i</div>
+                <p class="text-4xl font-extrabold text-[var(--color-primary-blue)] mb-2">2.</p>
+                <p class="text-lg font-bold text-[var(--color-gray-dark)]">Marketing Automatizado</p>
+                <p class="text-sm text-gray-600">Campañas personalizadas y seguimiento oportuno.</p>
+                <!-- CONTENIDO IN-LINE -->
+                <div class="card-detail-container" id="detail-flow-card-2"></div>
+            </div>
+            <!-- Paso 3: Soporte Omnicanal -->
+            <div id="flow-card-3" class="flow-step step-3 interactive-card" onclick="toggleCardContent('flow-card-3')">
+                 <div class="info-indicator">i</div>
+                <p class="text-4xl font-extrabold text-[var(--color-primary-blue)] mb-2">3.</p>
+                <p class="text-lg font-bold text-[var(--color-gray-dark)]">Soporte Omnicanal</p>
+                <p class="text-sm text-gray-600">Centralización de consultas y respuesta rápida.</p>
+                <!-- CONTENIDO IN-LINE -->
+                <div class="card-detail-container" id="detail-flow-card-3"></div>
+            </div>
+            <!-- Paso 4: Finanzas y Analítica -->
+            <div id="flow-card-4" class="flow-step step-4 interactive-card" onclick="toggleCardContent('flow-card-4')">
+                 <div class="info-indicator">i</div>
+                <p class="text-4xl font-extrabold text-[var(--color-primary-blue)] mb-2">4.</p>
+                <p class="text-lg font-bold text-[var(--color-gray-dark)]">Finanzas y Analítica</p>
+                <p class="text-sm text-gray-600">Informes en tiempo real y control presupuestario.</p>
+                <!-- CONTENIDO IN-LINE -->
+                <div class="card-detail-container" id="detail-flow-card-4"></div>
+            </div>
+        </div>
+
+        <!-- Flecha central (simulada con HTML/CSS) -->
+        <div class="flex justify-center my-6">
+            <div class="w-0 h-0 border-l-[10px] border-l-transparent border-t-[20px] border-t-[var(--color-gray-dark)] border-r-[10px] border-r-transparent"></div>
+        </div>
+        
+        <!-- Plataforma Unificada (Rectángulo Central) - CORRECCIÓN V1.29.19 -->
+        <div class="flex justify-center">
+            <!-- WRAPPER: Captura el clic y tiene la animación -->
+            <div id="plataforma-unificada-wrapper" class="rect-wrapper pulse" onclick="toggleCardContent('plataforma-unificada-rect')">
+                <!-- CONTENEDOR DE DISEÑO: No tiene el 'onclick' para evitar conflicto -->
+                <div id="plataforma-unificada-rect" class="flex flex-col items-center justify-center bg-[var(--color-primary-blue)] text-white text-center shadow-xl">
+                    <div class="flex flex-col items-center">
+                         <div class="info-indicator" style="top: 15px; right: 15px; background-color: var(--color-white); color: var(--color-primary-blue);">i</div>
+                        <p class="text-4xl font-extrabold tracking-tight" style="color: var(--color-white);">Zoho</p>
+                        <p class="text-2xl font-bold leading-none" style="color: var(--color-accent-blue);">One</p>
+                    </div>
+                </div>
+                <!-- CONTENIDO IN-LINE (Fuera del contenedor de diseño para que el height se calcule bien) -->
+                <div class="card-detail-container p-0" id="detail-plataforma-unificada-rect"></div>
+            </div>
+        </div>
+        
+        <p class="text-xs text-center text-gray-500 mt-4">Resultado: Visión 360° del cliente, eficiencia operativa y decisiones basadas en datos.</p>
+    </div>
+
+    <!-- SECCIÓN 3: IMPACTO MEDIBLE (ROI) -->
+    <div class="section-header mb-10 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold">El Impacto Medible: Retorno de la Inversión (ROI)</h2>
+    </div>
+
+    <!-- KPIs Soportando el Análisis - Iconografía v1.29.12 -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+        <!-- KPI 1: ROI total (Crecimiento de Barras) -->
+        <div id="kpi-roi" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" onclick="toggleCardContent('kpi-roi')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-2">
+                <!-- SVG: Gráfico de Barras Aumentando -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[var(--color-primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/><path d="M18 4l-7 7-3-3-4 4"/></svg>
+            </div>
+            <p class="text-3xl font-extrabold text-[var(--color-primary-blue)] leading-none">+660%</p>
+            <p class="text-sm text-gray-600 font-semibold mt-1">Retorno de la Inversión (ROI)</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-kpi-roi"></div>
+        </div>
+        <!-- KPI 2: Tiempo de Payback (Cronómetro con Check) -->
+        <div id="kpi-payback" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" onclick="toggleCardContent('kpi-payback')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-2">
+                <!-- SVG: Cronómetro/Temporizador con Check -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[var(--color-accent-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <p class="text-3xl font-extrabold text-[var(--color-accent-blue)] leading-none">2.4 Meses</p>
+            <p class="text-sm text-gray-600 font-semibold mt-1">Tiempo de Recuperación (Payback)</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-kpi-payback"></div>
+        
+        </div>
+        <!-- KPI 3: Reducción TCO (Bolsa de Dinero con Flecha de Reducción) -->
+        <div id="kpi-tco" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" onclick="toggleCardContent('kpi-tco')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-2">
+                <!-- SVG: Ahorro/Moneda con flecha hacia abajo -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[var(--color-secondary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 17h-4l-3-5"/></svg>
+            </div>
+            <p class="text-3xl font-extrabold text-[var(--color-secondary-blue)] leading-none">40% menos</p>
+            <p class="text-sm text-gray-600 font-semibold mt-1">Reducción del TCO (Costo Total de Propiedad)</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-kpi-tco"></div>
+        </div>
+        <!-- KPI 4: Probabilidad Payback (Distribución Normal/Riesgo) -->
+        <div id="kpi-montecarlo" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" onclick="toggleCardContent('kpi-montecarlo')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-2">
+                <!-- SVG: Gráfico de Curva de Distribución (Riesgo) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#FF6F00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7M2 12l-1 0 1-0M22 12l1 0-1 0M12 5v14"/><path d="M8 17s3-3 4-4 1 0 4 4"/></svg>
+            </div>
+            <p class="text-3xl font-extrabold text-[#FF6F00] leading-none">92.5%</p>
+            <p class="text-sm text-gray-600 font-semibold mt-1">Probabilidad de Payback en < 3 Meses</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-kpi-montecarlo"></div>
+        </div>
+    </div>
+    
+    <!-- Gráficos de Validación - Se mantienen -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- GRÁFICO 1: Eficiencia de Ventas (Tasa de Conversión vs. Carrito Abandonado) -->
+        <div id="chart-card-1" class="interactive-card bg-white p-6 rounded-xl shadow-md flex flex-col" onclick="toggleCardContent('chart-card-1')">
+             <div class="info-indicator">i</div>
+            <h3 class="text-xl font-bold text-[var(--color-gray-dark)] mb-2">Mejora en la Eficiencia de Ventas</h3>
+            <p class="text-sm text-gray-500 mb-4">La automatización aumenta la tasa de conversión y reduce las oportunidades perdidas.</p>
+            <div class="chart-container">
+                <canvas id="conversionChart"></canvas>
+            </div>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-chart-card-1"></div>
+        </div>
+
+        <!-- GRÁFICO 2: Eficiencia Operativa (Doughnut Chart) -->
+        <div id="chart-card-2" class="interactive-card bg-white p-6 rounded-xl shadow-md flex flex-col" onclick="toggleCardContent('chart-card-2')">
+             <div class="info-indicator">i</div>
+            <h3 class="text-xl font-bold text-[var(--color-gray-dark)] mb-2">Optimización de la Eficiencia Operativa</h3>
+            <p class="text-sm text-gray-500 mb-4">El tiempo del equipo se enfoca en actividades estratégicas, no en tareas manuales.</p>
+            <div class="chart-container">
+                <canvas id="efficiencyChart"></canvas>
+            </div>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-chart-card-2"></div>
+        </div>
+
+        <!-- GRÁFICO 3: Simulación Monte Carlo (Distribución de Riesgo) -->
+        <div id="chart-card-3" class="interactive-card bg-white p-6 rounded-xl shadow-md md:col-span-2 flex flex-col" onclick="toggleCardContent('chart-card-3')">
+             <div class="info-indicator">i</div>
+            <h3 class="text-xl font-bold text-[var(--color-gray-dark)] mb-2">Validación de Riesgo: Simulación Monte Carlo</h3>
+            <p class="text-sm text-gray-500 mb-4">Distribución de probabilidad del tiempo de Payback Period (Basado en 10,000 simulaciones).</p>
+            <div class="chart-container" style="height: 350px;">
+                <canvas id="monteCarloChart"></canvas>
+            </div>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-chart-card-3"></div>
+        </div>
+        
+        <!-- GRÁFICO 4: Satisfacción del Cliente (NPS) -->
+        <div id="chart-card-4" class="interactive-card bg-white p-6 rounded-xl shadow-md flex flex-col" onclick="toggleCardContent('chart-card-4')">
+             <div class="info-indicator">i</div>
+            <h3 class="text-xl font-bold text-[var(--color-gray-dark)] mb-2">Incremento en la Satisfacción del Cliente</h3>
+            <p class="text-sm text-gray-500 mb-4">Una experiencia omnicanal y soporte rápido elevan la lealtad y el NPS.</p>
+            <div class="chart-container">
+                <canvas id="npsChart"></canvas>
+            </div>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-chart-card-4"></div>
+        </div>
+        
+        <!-- GRÁFICO 5: ROI (Barra Horizontal) -->
+        <div id="chart-card-5" class="interactive-card bg-white p-6 rounded-xl shadow-md flex flex-col" onclick="toggleCardContent('chart-card-5')">
+             <div class="info-indicator">i</div>
+            <h3 class="text-xl font-bold text-[var(--color-gray-dark)] mb-2">Retorno vs. Inversión Inicial</h3>
+            <p class="text-sm text-gray-500 mb-4">El valor generado supera exponencialmente el costo de la plataforma unificada.</p>
+            <div class="chart-container">
+                <canvas id="roiBarChart"></canvas>
+            </div>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-chart-card-5"></div>
+        </div>
+    </div>
+    
+    <!-- SECCIÓN 4: BENEFICIOS CLAVE DE LA UNIFICACIÓN -->
+    <div class="section-header mb-10 mt-16 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold">Beneficios Clave de la Unificación</h2>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+        
+        <!-- Beneficio 1: Visión 360° -->
+        <div id="benefit-card-1" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" onclick="toggleCardContent('benefit-card-1')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[var(--color-primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+            </div>
+            <p class="text-2xl font-extrabold text-[var(--color-gray-dark)] leading-none">Visión 360°</p>
+            <p class="text-sm text-gray-500 mt-1">Cada dato del cliente en un solo lugar.</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-benefit-card-1"></div>
+        </div>
+        
+        <!-- Beneficio 2: Eficiencia Aumentada -->
+        <div id="benefit-card-2" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" style="border-left-color: var(--color-secondary-blue);" onclick="toggleCardContent('benefit-card-2')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[var(--color-secondary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5 4 4 1.5-1.5a2 2 0 0 1 2.8 2.8L17.5 15"></path><path d="m5 17 4 4h8a2 2 0 0 0 2-2v-8l-4-4H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2Z"></path><path d="m15 5-4-4H5a2 2 0 0 0-2 2v8l4 4"></path></svg>
+            </div>
+            <p class="text-2xl font-extrabold text-[var(--color-gray-dark)] leading-none">Eficiencia Aumentada</p>
+            <p class="text-sm text-gray-500 mt-1">Automatización de tareas repetitivas.</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-benefit-card-2"></div>
+        </div>
+        
+        <!-- Beneficio 3: Decisiones Basadas en Datos -->
+        <div id="benefit-card-3" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" style="border-left-color: var(--color-accent-blue);" onclick="toggleCardContent('benefit-card-3')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[var(--color-accent-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8.7 12 15 7.3 10.3 3 14"/><path d="M18.7 8.7H13M18.7 8.7V14"/></svg>
+            </div>
+            <p class="text-2xl font-extrabold text-[var(--color-gray-dark)] leading-none">Decisiones</p>
+            <p class="text-sm text-gray-500 mt-1">Informes en tiempo real y predictivos.</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-benefit-card-3"></div>
+        </div>
+        
+        <!-- Beneficio 4: Escalabilidad sin Fricción -->
+        <div id="benefit-card-4" class="interactive-card bg-white rounded-xl p-5 text-center shadow-md styled-card" style="border-left-color: #FF6F00;" onclick="toggleCardContent('benefit-card-4')">
+             <div class="info-indicator">i</div>
+            <div class="flex justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#FF6F00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            </div>
+            <p class="text-2xl font-extrabold text-[var(--color-gray-dark)] leading-none">Escalabilidad</p>
+            <p class="text-sm text-gray-500 mt-1">Soporte para el crecimiento del negocio.</p>
+            <!-- CONTENIDO IN-LINE -->
+            <div class="card-detail-container" id="detail-benefit-card-4"></div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 5: PREGUNTAS CLAVE (FAQ) - Sin cambios -->
+    <div class="section-header mb-10 mt-16 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold">Preguntas Clave para Emprendedores y PYMES</h2>
+    </div>
+    
+    <div class="max-w-4xl mx-auto space-y-8">
+        
+        <!-- CATEGORÍA 1: EL PROBLEMA Y LA SOLUCIÓN (UNIFICACIÓN) -->
+        <div id="faq-category-1" class="accordion-category">
+            <div class="accordion-category-header" onclick="toggleCategoryAccordion(this, 'category-content-1')" role="button" aria-expanded="false" aria-controls="category-content-1">
+                <h3 class="text-xl font-extrabold">1. El Problema y la Solución (Unificación)</h3>
+                <svg class="category-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            <div id="category-content-1" class="category-content" aria-hidden="true">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-1-1">
+                        <span class="text-base">¿Cómo sé si mi "Caos de Aplicaciones" ya es un problema grave y no solo una incomodidad?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-1-1" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Como especialista, el indicador clave es la **duplicación de datos y tareas**. Si usted o sus empleados dedican tiempo a copiar manualmente información de un sistema (ej: Shopify) a otro (ej: Excel o CRM), o si dos departamentos tienen números de ventas diferentes, el caos ya está erosionando su rentabilidad. La fragmentación impide ver el 90% de sus datos, lo cual es un problema estratégico grave para cualquier emprendedor que busca crecer.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-1-2">
+                        <span class="text-base">¿Zoho One es solo para empresas grandes? ¿Es viable para una PYME o un emprendedor en crecimiento?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-1-2" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Definitivamente no. Zoho One es ideal para PYMES porque ofrece la funcionalidad de un ERP de gran empresa a una fracción del costo y sin la complejidad de integración. Para un emprendedor, permite empezar con lo básico (CRM, Finanzas) y **escalar funcionalmente** a medida que crece. Los costos de implementación son bajos, lo que minimiza la barrera de entrada y justifica el rápido Payback de 2.4 meses.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-1-3">
+                        <span class="text-base">¿Qué significa que Zoho One sea un "Sistema Operativo de Negocio"?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-1-3" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Significa que, al igual que Windows o macOS controlan su computadora, Zoho One controla su empresa. No son solo aplicaciones aisladas, sino un conjunto de herramientas **conectadas nativamente** que comparten la misma base de datos. Cuando entra una venta por Zoho Commerce, Zoho Inventory y Zoho CRM lo saben automáticamente, sin necesidad de integraciones de terceros. Esto garantiza la cohesión operativa.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-1-4">
+                        <span class="text-base">¿Qué aplicaciones son cruciales para mi e-commerce al inicio?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-1-4" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Para un e-commerce, el flujo unificado debe centrarse en: **1) Zoho CRM** (Base de datos central), **2) Zoho Inventory** (Control de stock en tiempo real) y **3) Zoho Books** (Facturación y Contabilidad). Estos tres módulos eliminan la ineficiencia, previenen las ventas perdidas por falta de stock y garantizan el cumplimiento fiscal, sentando la base para el crecimiento.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-1-5">
+                        <span class="text-base">¿Es necesario contratar un equipo de TI completo para mantener la plataforma?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-1-5" aria-hidden="true">
+                        <p class="text-sm text-gray-700">No. El modelo SaaS (Software as a Service) de Zoho One significa que la infraestructura, el mantenimiento y las actualizaciones son gestionados por Zoho. Usted solo necesita un administrador interno que entienda su negocio. Esto es clave para el **bajo TCO** de la solución, ya que elimina el costo fijo y alto de un gran departamento de TI.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- CATEGORÍA 2: VIABILIDAD Y FINANCIAMIENTO (ROI y TCO) -->
+        <div id="faq-category-2" class="accordion-category">
+            <div class="accordion-category-header" onclick="toggleCategoryAccordion(this, 'category-content-2')" role="button" aria-expanded="false" aria-controls="category-content-2">
+                <h3 class="text-xl font-extrabold">2. Viabilidad y Financiamiento (ROI y TCO)</h3>
+                <svg class="category-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            <div id="category-content-2" class="category-content" aria-hidden="true">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-2-1">
+                        <span class="text-base">El ROI de +660% parece muy alto. ¿Cómo se valida esta métrica para una PYME real?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-2-1" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Este ROI se valida a través de dos componentes principales: **1) Ahorro de Costos** (la reducción del 40% en trabajo manual y la eliminación de costos de integración de software) y **2) Crecimiento de Ingresos** (el aumento del 25% en la fidelización de clientes, ya que un cliente leal gasta más). El +660% es una cifra auditada que demuestra el efecto multiplicador de la unificación sobre la rentabilidad operativa.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-2-2">
+                        <span class="text-base">¿Qué es el Monte Carlo y por qué me da seguridad como Pyme ante la inversión?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-2-2" aria-hidden="true">
+                        <p class="text-sm text-gray-700">La Simulación Monte Carlo es una herramienta de **validación de riesgo financiero**. En lugar de asumir que el Payback será *exactamente* 2.4 meses, simula 10,000 escenarios posibles (optimista, pesimista, promedio). Que nuestro análisis arroje un **92.5% de probabilidad** de Payback en menos de 3 meses le dice al emprendedor que la inversión es **extremadamente robusta** y que el riesgo de una recuperación lenta es estadísticamente bajo.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-2-3">
+                        <span class="text-base">¿Cómo se reduce el Costo Total de Propiedad (TCO) con una plataforma unificada?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-2-3" aria-hidden="true">
+                        <p class="text-sm text-gray-700">El TCO incluye más que solo el costo de la licencia. La reducción se da en tres frentes: **1) Integración:** No paga por APIs o conectores; todo es nativo. **2) Mantenimiento:** Un solo proveedor, un solo equipo de soporte. **3) Tiempo:** La automatización reduce las horas de trabajo manual, lo que es un ahorro salarial directo. Estos ahorros combinados llevan a una reducción del TCO del 40%.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-2-4">
+                        <span class="text-base">Si ya uso Excel y WhatsApp gratis, ¿por qué debería pagar por Zoho One?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-2-4" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Usted está pagando el costo del **tiempo perdido** y la **oportunidad**. El "software gratuito" crea ineficiencia y silos, limitando su capacidad de crecimiento. La inversión en Zoho One se justifica porque, como muestra el Payback de 2.4 meses, el ahorro en horas de trabajo manual y el aumento en ventas que genera, supera el costo de la licencia en menos de tres meses. Es un motor de crecimiento, no solo un gasto.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-2-5">
+                        <span class="text-base">¿Qué tan importante es el NPS (Satisfacción del Cliente) y cómo lo mejora la unificación?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-2-5" aria-hidden="true">
+                        <p class="text-sm text-gray-700">El NPS (Net Promoter Score) mide la lealtad. Si mejora de 45 a 75, significa que sus clientes ahora son promotores activos. La unificación lo mejora porque el equipo de soporte, al estar conectado al CRM, puede resolver problemas rápidamente con el **contexto completo** del cliente ("Veo que compraste esto el mes pasado, permíteme ayudarte"), lo que convierte una queja en una experiencia positiva y fideliza al cliente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CATEGORÍA 3: IMPLEMENTACIÓN Y CRECIMIENTO -->
+        <div id="faq-category-3" class="accordion-category">
+            <div class="accordion-category-header" onclick="toggleCategoryAccordion(this, 'category-content-3')" role="button" aria-expanded="false" aria-controls="category-content-3">
+                <h3 class="text-xl font-extrabold">3. Implementación y Crecimiento</h3>
+                <svg class="category-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            <div id="category-content-3" class="category-content" aria-hidden="true">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-3-1">
+                        <span class="text-base">¿Qué implica el proceso de migración de mis datos actuales (Shopify, Excel) a Zoho One?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-3-1" aria-hidden="true">
+                        <p class="text-sm text-gray-700">La clave es la **limpieza y centralización**. El proceso empieza por mapear sus datos (clientes, productos) desde las fuentes externas. La migración de plataformas como Shopify a Zoho Commerce suele ser directa a través de integradores nativos. Su partner de implementación se enfocará en asegurar que el CRM sea la única fuente de verdad antes de automatizar los flujos, minimizando la disrupción operativa.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-3-2">
+                        <span class="text-base">Si mi negocio crece un 200% el próximo año, ¿Zoho One podrá soportarlo?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-3-2" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Sí. Zoho One está diseñado para la **escalabilidad sin fricción**. A diferencia de las soluciones fragmentadas que fallan al crecer, la plataforma unificada le permite agregar nuevos usuarios y habilitar nuevas aplicaciones (ej., Analytics, Projects) sin necesidad de una costosa reimplementación. Esta es la esencia del beneficio de escalabilidad: crecer en volumen sin aumentar la complejidad operativa.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-3-3">
+                        <span class="text-base">¿Cómo me ayuda la automatización a tomar mejores decisiones?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-3-3" aria-hidden="true">
+                        <p class="text-sm text-gray-700">La automatización no solo ahorra tiempo, sino que genera **datos limpios en tiempo real**. Con Zoho Analytics, puede ver métricas clave (margen de ganancia, tasas de conversión, rendimiento de inventario) en un solo dashboard. Usted pasa de **reaccionar** a los problemas (ej: "Se nos acabó el stock") a **predecirlos** ("Debemos ordenar más stock la próxima semana"). Esto es tomar decisiones estratégicas, no operativas.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-3-4">
+                        <span class="text-base">¿Cuánto tiempo lleva ver el impacto real en la eficiencia después de la implementación?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-3-4" aria-hidden="true">
+                        <p class="text-sm text-gray-700">Los beneficios se sienten en fases. La **eficiencia operativa** (reducción del trabajo manual) se siente a menudo dentro de las primeras semanas post-migración. El **ROI financiero** completo se refleja en el Payback Period, que se valida en solo 2.4 meses. Esto es un ciclo de validación muy rápido para la mayoría de las inversiones en tecnología de este calibre.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)" role="button" aria-expanded="false" aria-controls="content-faq-3-5">
+                        <span class="text-base">¿Es fácil entrenar a mi equipo en el uso de una plataforma tan grande?</span>
+                        <svg class="accordion-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="accordion-content" id="content-faq-3-5" aria-hidden="true">
+                        <p class="text-sm text-gray-700">La principal ventaja de la unificación es la **interfaz de usuario consistente**. Si su equipo aprende a usar Zoho CRM, el salto a Zoho Desk o Zoho Books es mucho más sencillo porque el diseño y la lógica son similares. El entrenamiento debe enfocarse en los nuevos flujos de trabajo automatizados, no en aprender 40 aplicaciones diferentes desde cero.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER/CTA SECTION -->
+    <div class="bg-[var(--color-gray-dark)] p-10 md:p-16 text-center rounded-xl shadow-2xl mt-16">
+        <h3 class="text-3xl md:text-4xl font-extrabold mb-4" style="color: white !important;">Deja de gestionar aplicaciones. Empieza a gestionar tu negocio.</h3>
+        <p class="text-lg mb-8" style="color: white !important;">La transformación digital es el camino hacia un crecimiento sostenible y rentable. Una plataforma unificada es el primer paso.</p>
+        <a href="https://forms.agtcomunidades.com/agtcompany/form/OhmyFi/formperma/nOn5BpA_F1GqIRac2opqPKOnvYT6bTJSpjVB8uccbzI" target="_blank" class="inline-block px-10 py-4 bg-[var(--color-secondary-blue)] text-white font-bold text-lg rounded-full shadow-lg hover:bg-[var(--color-primary-blue)] transition duration-300">Descubre Cómo</a>
+    </div>
+
+</div>
+
+<script>
+    // --- LÓGICA DE ACCESIBILIDAD (ARIA) y Utilidades de Acordeón ---
+    function _setAria(el, expanded) {
+        if (!el) return;
+        el.setAttribute('aria-expanded', String(!!expanded));
+    }
+    function _setHidden(el, hidden) {
+        if (!el) return;
+        el.setAttribute('aria-hidden', String(!!hidden));
+    }
+    
+    function wrapLabel(label) {
+        // ... (función para envolver etiquetas) ...
+        if (typeof label !== 'string' || label.length <= 16) { return label; }
+        const words = label.split(' ');
+        let lines = [];
+        let currentLine = '';
+        words.forEach(word => {
+            if ((currentLine + ' ' + word).trim().length <= 16) {
+                currentLine = (currentLine + ' ' + word).trim();
+            } else {
+                if (currentLine) { lines.push(currentLine); }
+                currentLine = word;
+            }
+        });
+        if (currentLine) { lines.push(currentLine); }
+        return lines;
+    }
+    // -------------------------------------------------------------
+
+    // --- LÓGICA DE ACORDEÓN INTEGRADO (NUEVA FUNCIÓN - v1.29.21) ---
+
+    // Definiciones de Contenido (RESTAUARDA Y ADAPTADA A IN-LINE)
+    const content = {
+        // PROBLEMA (v1.13.0 - Restaurado a full HTML)
+        'card-problema-1': { // OK
+            title: 'Silos y Datos Fragmentados',
+            content: `
+                <p class="font-semibold text-base text-[var(--color-secondary-blue)]">Racional:</p>
+                <p class="text-sm text-gray-900">La dispersión de información entre múltiples aplicaciones (CRM, Inventario, Marketing, Finanzas) impide obtener una única fuente de verdad. Esto genera duplicidad de trabajo, datos inconsistentes y una visión parcial del cliente.</p>
+                <hr class="my-2 border-gray-300">
+                <p class="font-semibold text-sm text-[var(--color-primary-blue)]">Validación:</p>
+                <p class="text-xs text-gray-900">Según estudios de <span class="font-bold">McKinsey & Company</span>, las empresas solo logran explotar entre el 5% y el 10% de los datos que generan, limitando las oportunidades estratégicas.</p>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('card-problema-1');">Cerrar Detalle</span>
+            `
+        },
+        'card-problema-2': { // OK
+            title: 'Ineficiencia Operativa',
+            content: `
+                <p class="font-semibold text-base text-[var(--color-secondary-blue)]">Racional:</p>
+                <p class="text-sm text-gray-900">La desconexión de sistemas obliga a los empleados a dedicar un tiempo excesivo a tareas manuales, como copiar datos, actualizar inventarios y conciliar información financiera. Esto reduce la productividad y eleva el margen de error humano.</p>
+                <hr class="my-2 border-gray-300">
+                <p class="font-semibold text-sm text-[var(--color-primary-blue)]">Validación:</p>
+                <p class="text-xs text-gray-900">La ineficiencia operativa es la incapacidad de maximizar el uso de recursos. <span class="font-bold">Gartner</span> indica que la automatización de procesos manuales es el factor principal para revertir esta ineficiencia y liberar tiempo.</p>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('card-problema-2');">Cerrar Detalle</span>
+            `
+        },
+        'card-problema-3': { // OK
+            title: 'Experiencia del Cliente Rota',
+            content: `
+                <p class="font-semibold text-base text-[var(--color-secondary-blue)]">Racional:</p>
+                <p class="text-sm text-gray-900">Cuando el equipo de soporte no tiene acceso inmediato al historial de compras o interacciones del cliente (disperso en diferentes apps), la respuesta es lenta e impersonal. Esto frustra al cliente y daña la lealtad a largo plazo.</p>
+                <hr class="my-2 border-gray-300">
+                <p class="font-semibold text-sm text-[var(--color-primary-blue)]">Validación:</p>
+                <p class="text-xs text-gray-900">Un modesto aumento del 5% en la retención de clientes puede incrementar las ganancias entre un 25% y un 95%. La experiencia personalizada es el motor de esta lealtad (<span class="font-bold">Bain & Company</span>, 2024).</p>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('card-problema-3');">Cerrar Detalle</span>
+            `
+        },
+        
+        // FLUJO (Restaurado)
+        'flow-card-1': { // OK
+            title: '1. CRM Integrado',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Beneficios:</p>
+                <p class="text-xs text-gray-900">Zoho CRM se convierte en el núcleo central, garantizando que cada departamento comparta una visión única y actualizada del cliente.</p>
+                <a href="https://www.zoho.com/es-xl/crm/" target="_blank" class="text-xs text-[var(--color-accent-blue)] hover:underline">Ver Zoho CRM</a>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('flow-card-1');">Cerrar</span>
+            `
+        },
+        'flow-card-2': { // OK
+            title: '2. Marketing Automatizado',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Beneficios:</p>
+                <p class="text-xs text-gray-900">Utiliza los datos del CRM para segmentar a la audiencia. Permite lanzar campañas personalizadas de manera automática y oportuna.</p>
+                <a href="https://www.zoho.com/es-xl/marketingautomation/" target="_blank" class="text-xs text-[var(--color-accent-blue)] hover:underline">Ver Zoho Marketing Automation</a>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('flow-card-2');">Cerrar</span>
+            `
+        },
+        'flow-card-3': { // OK
+            title: '3. Soporte Omnicanal',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Beneficios:</p>
+                <p class="text-xs text-gray-900">Centraliza todas las consultas de clientes (email, chat) en tickets rastreables. El soporte siempre tiene el contexto completo del cliente.</p>
+                <a href="https://www.zoho.com/es-xl/desk/" target="_blank" class="text-xs text-[var(--color-accent-blue)] hover:underline">Ver Zoho Desk (Soporte)</a>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('flow-card-3');">Cerrar</span>
+            `
+        },
+        'flow-card-4': { // OK
+            title: '4. Finanzas y Analítica',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Beneficios:</p>
+                <p class="text-xs text-gray-900">La integración con Books y Analytics automatiza la facturación y proporciona informes financieros y operativos en tiempo real.</p>
+                <a href="https://www.zoho.com/es-xl/books/" target="_blank" class="text-xs text-[var(--color-accent-blue)] hover:underline">Ver Zoho Books (Finanzas)</a>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('flow-card-4');">Cerrar</span>
+            `
+        },
+        'plataforma-unificada-rect': { // OK
+            title: 'Plataforma Unificada Zoho One',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Valor Central:</p>
+                <p class="text-xs text-gray-900">Sistema Operativo para el Negocio que garantiza que todas las aplicaciones "hablen el mismo idioma". La integración nativa elimina los costos ocultos.</p>
+                <a href="https://www.zoho.com/es-xl/one/" target="_blank" class="text-xs text-[var(--color-accent-blue)] hover:underline">Ver Zoho One (Plataforma)</a>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('plataforma-unificada-rect');">Cerrar</span>
+            `
+        },
+        // KPIS (Se mantienen funcionales)
+        'kpi-roi': {
+            title: 'Retorno de la Inversión (ROI)',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p>
+                <p class="text-xs text-gray-900">Un ROI del 660% significa que por cada dólar invertido, la empresa recupera $6.60 en ahorros y ganancias incrementales. (Fuente: Nucleus Research)</p>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('kpi-roi');">Cerrar</span>
+            `
+        },
+        'kpi-payback': {
+            title: 'Tiempo de Recuperación (Payback)',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p>
+                <p class="text-xs text-gray-900">El Payback Period (2.4 meses) es el tiempo que tarda la inversión inicial en generar flujo de efectivo positivo. Un tiempo de recuperación tan corto minimiza el riesgo. (Fuente: Nucleus Research)</p>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('kpi-payback');">Cerrar</span>
+            `
+        },
+        'kpi-tco': {
+            title: 'Reducción del Costo Total de Propiedad (TCO)',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p>
+                <p class="text-xs text-gray-900">La unificación elimina costos ocultos de integrar múltiples sistemas. La reducción del 40% en trabajo manual se traduce en ahorro salarial y operativo.</p>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('kpi-tco');">Cerrar</span>
+            `
+        },
+        'kpi-montecarlo': {
+            title: 'Probabilidad de Payback (Simulación Monte Carlo)',
+            content: `
+                <p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p>
+                <p class="text-xs text-gray-900">El 92.5% de probabilidad de recuperar la inversión en menos de 3 meses valida la robustez de los datos. Técnica estándar en análisis financiero.</p>
+                <span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('kpi-montecarlo');">Cerrar</span>
+            `
+        },
+        // GRÁFICOS (Se mantienen funcionales)
+        'chart-card-1': { title: 'Mejora en la Eficiencia de Ventas', content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">El gráfico muestra el impacto directo de la automatización: la tasa de conversión se duplica y el abandono de carrito se reduce, minimizando las pérdidas.</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('chart-card-1');">Cerrar</span>` },
+        'chart-card-2': { title: 'Optimización de la Eficiencia Operativa', content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">Visualiza el cambio en la asignación de recursos. El 75% del tiempo del equipo se reasigna a actividades estratégicas (no manuales) impulsando el crecimiento. (Fuente: Análisis Interno)</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('chart-card-2');">Cerrar</span>` },
+        'chart-card-3': { title: 'Validación de Riesgo', content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">El histograma valida que la mayoría de los escenarios logran el Payback en 2.3 a 2.5 meses, indicando un riesgo mínimo de un Payback prolongado.</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('chart-card-3');">Cerrar</span>` },
+        'chart-card-4': { title: 'Incremento en la Satisfacción del Cliente', content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">El NPS mejora de 45 a 75, resultado de la integración del soporte (Desk) con el contexto completo del cliente (CRM).</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('chart-card-4');">Cerrar</span>` },
+        'chart-card-5': { title: 'Retorno vs. Inversión Inicial', content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">El gráfico simple muestra que el valor estratégico y los ahorros superan ampliamente el costo inicial, validando la inversión.</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('chart-card-5');">Cerrar</span>` },
+        // BENEFICIOS (Restaurado)
+        'benefit-card-1': { // OK
+            title: 'Visión 360° del Cliente',
+            content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">Centralización de datos: garantiza que cada interacción esté accesible para interacciones personalizadas. (Fuente: HBR)</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('benefit-card-1');">Cerrar</span>`
+        },
+        'benefit-card-2': { // OK
+            title: 'Eficiencia Operativa Aumentada',
+            content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">La automatización de flujos de trabajo elimina tareas manuales repetitivas, liberando hasta el 40% del tiempo. (Fuente: McKinsey)</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('benefit-card-2');">Cerrar</span>`
+        },
+        'benefit-card-3': { // OK
+            title: 'Decisiones Basadas en Datos',
+            content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">Reportes en tiempo real y predictivos sin consolidación manual, permitiendo decisiones ágiles y fundamentadas. (Fuente: Gartner)</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('benefit-card-3');">Cerrar</span>`
+        },
+        'benefit-card-4': { // OK
+            title: 'Escalabilidad sin Fricción',
+            content: `<p class="text-sm font-semibold text-[var(--color-secondary-blue)]">Racional:</p><p class="text-xs text-gray-900">La infraestructura está lista para soportar el crecimiento del negocio sin requerir costosas integraciones adicionales. (Fuente: Forrester)</p><span class="close-btn" onclick="event.stopPropagation(); toggleCardContent('benefit-card-4');">Cerrar</span>`
+        },
+    };
+
+    function toggleCardContent(cardId) {
+        // Detener la propagación para evitar doble clic si se hace clic en el detalle
+        if (event) {
+            event.stopPropagation();
+        }
+
+        // Determinar el elemento principal de la tarjeta para elementos como Zoho One wrapper
+        let parentCard;
+        if (cardId === 'plataforma-unificada-rect') {
+            parentCard = document.getElementById('plataforma-unificada-wrapper');
+        } else {
+            parentCard = document.getElementById(cardId);
+        }
+
+        // El ID del contenedor de detalle siempre será 'detail-' + cardId
+        const detailContainer = document.getElementById('detail-' + cardId);
+        const cardContent = content[cardId]; // Usamos cardId como KEY de la variable content
+
+        if (!detailContainer) return;
+
+        // 1. Cierra todos los demás detalles abiertos
+        document.querySelectorAll('.card-detail-container.active').forEach(item => {
+            if (item !== detailContainer) {
+                // Forzar el retorno a la posición inicial
+                item.style.maxHeight = null;
+                item.classList.remove('active');
+            }
+        });
+
+        // 2. Abre o cierra el actual
+        const isActive = detailContainer.classList.contains('active');
+        if (isActive) {
+            // CERRAR (Estabilidad UX)
+            // Forzar el recálculo antes de contraerse para evitar el "salto residual"
+            detailContainer.style.maxHeight = detailContainer.scrollHeight + 'px';
+            void detailContainer.offsetHeight; // Forzar reflow/recalculo
+
+            detailContainer.style.maxHeight = null;
+            detailContainer.classList.remove('active');
+            
+        } else {
+            // ABRIR
+            if (cardContent && cardContent.content) {
+                 // Inyectar contenido (solo se hace una vez)
+                if (detailContainer.innerHTML.trim() === "") {
+                    // Inyectamos el HTML de contenido limpio.
+                    detailContainer.innerHTML = cardContent.content;
+                }
+                
+                // Forzar la apertura
+                detailContainer.classList.add('active');
+                // Usamos un valor grande para garantizar que el contenido no se corte
+                // sumando 100px como buffer adicional para el padding/margin
+                detailContainer.style.maxHeight = detailContainer.scrollHeight + 100 + "px";
+                
+                // NOTA: Usamos el Height Messenger para notificar el cambio de altura
+                document.dispatchEvent(new Event('accordion:toggled'));
+                
+                // Timeout para asegurar que el Height Messenger reacciona después del redibujado
+                 setTimeout(() => {
+                    document.dispatchEvent(new Event('accordion:toggled'));
+                 }, 450);
+            }
+        }
+    }
+
+
+    // --- LÓGICA DE ACORDEÓN (FAQ) --- (Mantenida)
+    
+    function toggleAccordion(header) {
+        // ... (La lógica de toggleAccordion se mantiene sin cambios) ...
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.accordion-icon');
+        
+        const categoryContent = header.closest('.category-content');
+        if (categoryContent) {
+            categoryContent.querySelectorAll('.accordion-content.active').forEach(item => {
+                if (item !== content) {
+                    item.style.maxHeight = null;
+                    item.classList.remove('active');
+                    _setAria(item.previousElementSibling, false);
+                    _setHidden(item, true);
+                    item.previousElementSibling.querySelector('.accordion-icon').classList.remove('rotate');
+                }
+            });
+        }
+        
+        const isActive = content.classList.contains('active');
+        if (isActive) {
+            const scrollHeight = content.scrollHeight; 
+            content.style.maxHeight = scrollHeight + "px"; 
+            content.classList.remove('active');
+            void content.offsetHeight; 
+            content.style.maxHeight = null;
+
+            icon.classList.remove('rotate');
+            _setAria(header, false);
+            _setHidden(content, true);
+            document.dispatchEvent(new Event('accordion:toggled')); 
+
+        } else {
+            const scrollHeight = content.scrollHeight; 
+            content.style.maxHeight = scrollHeight + "px"; 
+            content.classList.add('active');
+            
+            setTimeout(() => {
+                if (content.classList.contains('active')) {
+                    content.style.maxHeight = 'none';
+                    document.dispatchEvent(new Event('accordion:toggled')); 
+                }
+            }, 300);
+
+            icon.classList.add('rotate');
+            _setAria(header, true);
+            _setHidden(content, false);
+            document.dispatchEvent(new Event('accordion:toggled'));
+        }
+    }
+
+    // Lógica de Acordeón de Categorías (Exclusivo) v1.29.10
+    (function(){
+        window.toggleCategoryAccordion = function(header, contentId){
+            try {
+            const category = header && header.closest ? header.closest('.accordion-category') : null;
+            const content = contentId ? document.getElementById(contentId) : (category ? category.querySelector('.category-content') : null);
+            const icon = header.querySelector('.category-icon');
+            if (!content) return;
+            const isActive = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+            document.querySelectorAll('.accordion-category').forEach(otherCategory => {
+                const otherContent = otherCategory.querySelector('.category-content');
+                const otherHeader = otherCategory.querySelector('.accordion-category-header');
+                const otherIcon = otherCategory.querySelector('.category-icon');
+                if (otherContent !== content && otherContent.style.maxHeight && otherContent.style.maxHeight !== '0px') {
+                    const scrollHeight = otherContent.scrollHeight;
+                    otherContent.style.maxHeight = scrollHeight + 'px'; 
+                    void otherContent.offsetHeight; 
+                    otherContent.style.maxHeight = '0px';
+                    otherIcon.classList.remove('rotate');
+                    _setAria(otherHeader, false);
+                    otherContent.querySelectorAll('.accordion-content').forEach(item => {
+                        item.style.maxHeight = null; item.classList.remove('active');
+                        _setAria(item.previousElementSibling, false); _setHidden(item, true);
+                        item.previousElementSibling.querySelector('.accordion-icon').classList.remove('rotate');
+                    });
+                    document.dispatchEvent(new Event('accordion:toggled')); 
+                }
+            });
+            
+            if (isActive) {
+                const scrollHeight = content.scrollHeight; 
+                content.style.maxHeight = scrollHeight + 'px'; 
+                void content.offsetHeight; 
+                content.style.maxHeight = '0px';
+                icon.classList.remove('rotate');
+                _setAria(header, false);
+                _setHidden(content, true);
+                content.querySelectorAll('.accordion-content').forEach(item => {
+                    item.style.maxHeight = null; item.classList.remove('active');
+                    _setAria(item.previousElementSibling, false); _setHidden(item, true);
+                    item.previousElementSibling.querySelector('.accordion-icon').classList.remove('rotate');
+                });
+            } else {
+                const scrollHeight = content.scrollHeight; 
+                content.style.maxHeight = scrollHeight + "px"; 
+                setTimeout(() => {
+                    if (content.style.maxHeight !== '0px') { 
+                        content.style.maxHeight = 'none';
+                        document.dispatchEvent(new Event('accordion:toggled')); 
+                    }
+                }, 800);
+                icon.classList.add('rotate');
+                _setAria(header, true);
+                _setHidden(content, false);
+            }
+            document.dispatchEvent(new Event('accordion:toggled'));
+            } catch(e){ /* no-op */ }
+        };
+    })();
+</script>
+
+
+<script>
+// --- RESTAURACIÓN: INICIALIZACIÓN DE GRÁFICOS (v1.29.15) ---
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // =================================================================
+    // 1. CONFIGURACIÓN DE GRÁFICOS (Chart.js)
+    // =================================================================
+
+    const primaryBlue = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-blue').trim();
+    const secondaryBlue = getComputedStyle(document.documentElement).getPropertyValue('--color-secondary-blue').trim();
+    const accentBlue = getComputedStyle(document.documentElement).getPropertyValue('--color-accent-blue').trim();
+    const accentOrange = '#FF6F00'; // Color de acento para riesgo/Monte Carlo
+
+    const chartOptionsBase = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    font: { size: 12 }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) {
+                            return label.join(' ');
+                        } else {
+                            return label;
+                        }
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    };
+
+    // --- Gráfico 1: Eficiencia de Ventas (Barra) ---
+    const conversionLabels = ['Tasa de Conversión', 'Abandono de Carrito'];
+    new Chart(document.getElementById('conversionChart'), {
+        type: 'bar',
+        data: {
+            labels: conversionLabels.map(wrapLabel),
+            datasets: [{
+                label: 'Antes',
+                data: [2, 45],
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                borderColor: 'rgba(0, 0, 0, 0.5)',
+                borderWidth: 1,
+                borderRadius: 4
+            }, {
+                label: 'Después',
+                data: [5, 25],
+                backgroundColor: primaryBlue,
+                borderColor: primaryBlue,
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            ...chartOptionsBase,
+            scales: {
+                y: {
+                    ...chartOptionsBase.scales.y,
+                    beginAtZero: true,
+                    title: { display: true, text: 'Porcentaje (%)' },
+                    max: 50,
+                    ticks: { callback: (value) => value + '%' }
+                },
+                x: {
+                     ...chartOptionsBase.scales.x,
+                     barPercentage: 0.9,
+                     categoryPercentage: 0.8
+                }
+            }
+        }
+    });
+
+    // --- Gráfico 2: Eficiencia Operativa (Doughnut) ---
+    new Chart(document.getElementById('efficiencyChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Tiempo Estratégico', 'Tiempo Manual/Administrativo'],
+            datasets: [{
+                data: [75, 25],
+                backgroundColor: [primaryBlue, secondaryBlue],
+                hoverOffset: 15,
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            ...chartOptionsBase,
+            plugins: {
+                ...chartOptionsBase.plugins,
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+    
+    // --- Gráfico 3: Simulación Monte Carlo (Histograma) ---
+    function generateMonteCarloData(mean, stdDev, numPoints) {
+        const data = [];
+        for (let i = 0; i < numPoints; i++) {
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            const value = Math.exp(Math.log(mean) + stdDev * z0);
+            data.push(Math.round(value * 100) / 100);
+        }
+        return data;
+    }
+
+    const simulatedData = generateMonteCarloData(2.4, 0.1, 10000);
+    
+    const bins = [];
+    const minVal = 1.8;
+    const maxVal = 3.0;
+    const binSize = 0.1;
+    
+    for (let i = minVal; i <= maxVal; i = Math.round((i + binSize) * 100) / 100) {
+        bins.push(i);
+    }
+    
+    const counts = bins.slice(0, -1).map(binStart => {
+        const binEnd = binStart + binSize;
+        return simulatedData.filter(d => d >= binStart && d < binEnd).length;
+    });
+
+    const labelsMC = bins.slice(0, -1).map(b => b.toFixed(1) + 'm'); 
+    
+    const backgroundColorsMC = counts.map((count, index) => {
+        const binLabel = labelsMC[index];
+        const binStart = parseFloat(binLabel.replace('m', ''));
+        
+        if (binStart >= 2.2 && binStart <= 2.5) {
+            return primaryBlue; 
+        }
+        return accentOrange;
+    });
+
+    new Chart(document.getElementById('monteCarloChart'), {
+        type: 'bar',
+        data: {
+            labels: labelsMC,
+            datasets: [{
+                label: 'Frecuencia de Ocurrencia',
+                data: counts,
+                backgroundColor: backgroundColorsMC, 
+                borderColor: backgroundColorsMC,
+                borderWidth: 1,
+                borderRadius: 2,
+                barPercentage: 1.0, 
+                categoryPercentage: 1.0 
+            }]
+        },
+        options: {
+            ...chartOptionsBase,
+            scales: {
+                y: {
+                    ...chartOptionsBase.scales.y,
+                    beginAtZero: true,
+                    title: { display: true, text: 'Frecuencia de Ocurrencia' }
+                },
+                x: {
+                    ...chartOptionsBase.scales.x,
+                    title: { display: true, text: 'Meses de Payback Period (Resultado de 10,000 Simulaciones)' },
+                    grid: { display: true, color: 'rgba(0, 0, 0, 0.05)' }
+                }
+            },
+            plugins: {
+                ...chartOptionsBase.plugins,
+                legend: { display: false }
+            }
+        }
+    });
+
+
+    // --- Gráfico 4: Satisfacción del Cliente (Barra Horizontal) ---
+    new Chart(document.getElementById('npsChart'), {
+        type: 'bar',
+        data: {
+            labels: [wrapLabel('Satisfacción del Cliente (NPS)')],
+            datasets: [{
+                label: 'Antes',
+                data: [45],
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                borderWidth: 1,
+                borderRadius: 4
+            }, {
+                label: 'Después',
+                data: [75],
+                backgroundColor: secondaryBlue,
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            ...chartOptionsBase,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    ...chartOptionsBase.scales.x,
+                    beginAtZero: true,
+                    title: { display: true, text: 'Puntuación (0-100)' },
+                    max: 100
+                },
+                y: {
+                    ...chartOptionsBase.scales.y,
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+    
+    // --- Gráfico 5: ROI (Barra Horizontal) ---
+    new Chart(document.getElementById('roiBarChart'), {
+        type: 'bar',
+        data: {
+            labels: [wrapLabel('Retorno de la Inversión (ROI)')],
+            datasets: [{
+                label: 'ROI (%)',
+                data: [660],
+                backgroundColor: primaryBlue,
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            ...chartOptionsBase,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    ...chartOptionsBase.scales.x,
+                    beginAtZero: true,
+                    title: { display: true, text: 'Porcentaje (%)' },
+                    ticks: { callback: (value) => value + '%' }
+                },
+                y: {
+                    ...chartOptionsBase.scales.y,
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                ...chartOptionsBase.plugins,
+                legend: { display: false }
+            }
+        }
+    });
+});
+
+</script>
+
+
+<div id="height-sentinel" style="position:relative;width:1px;height:1px;"></div>
+</body>
+</html>
+
